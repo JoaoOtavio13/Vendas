@@ -1,16 +1,24 @@
 from django.db import models, transaction
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class Cliente(models.Model):
-    nome = models.CharField(max_length=100)
-    cpf = models.CharField(max_length=11, unique=True)
-    email = models.EmailField()
-    idade = models.IntegerField()
-    cidade = models.CharField(max_length=100)
-   
+class Usuario(AbstractUser):
+    nome = models.CharField(max_length=100, blank=True, null=True)
+    idade = models.IntegerField(blank=True, null=True)
+    cpf = models.CharField(max_length=14, blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    endereco = models.TextField(blank=True, null=True)
+    cidade = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+ 
     def __str__(self):
-        return self.nome
+        # Ensure __str__ always returns a string (fallback to username)
+        return self.nome or self.username or ''
+
+# Backwards-compatibility alias for migrations that referenced `User`
+User = Usuario
     
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -36,27 +44,28 @@ class Produto(models.Model):
         return self.nome
     
 class Estoque(models.Model):
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.PositiveIntegerField(default=0)
     minimo_quantidade = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.produto.nome} - {self.quantidade}"        
+        return f"{self.produto_id.nome} - {self.quantidade}"        
     
     
 class Venda(models.Model):
-    cliente_id = models.ForeignKey(Cliente, on_delete = models.CASCADE)
+    # Campo historicamente chamado 'cliente_id' no DB; mapear para a coluna existente
+    usuario_id = models.ForeignKey(Usuario, on_delete = models.CASCADE, db_column='cliente_id_id')
     data = models.DateTimeField(auto_now_add=True)
 
     def total(self):
         return sum(item.subtotal() for item in self.itens.all())
     
     def __str__(self):
-        return f"Venda #{self.id} - {self.cliente_id.nome}"
+        return f"Venda #{self.id} - {self.usuario.nome}"
     
 class Venda_Produto(models.Model):
-    venda_id = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
-    produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    venda_id = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE, db_column='venda_id_id')
+    produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE, db_column='produto_id_id')
     quantidade = models.IntegerField()
 
     def subtotal(self):
@@ -72,8 +81,9 @@ class Venda_Produto(models.Model):
 
         # operação transacional para evitar race conditions
         with transaction.atomic():
+            # Estoque model uses field `produto_id`, so lookup by that field name
             estoque, created = Estoque.objects.select_for_update().get_or_create(
-                produto=self.produto_id,
+                produto_id=self.produto_id,
                 defaults={'quantidade': 0, 'minimo_quantidade': 0}
             )
             novo_saldo = estoque.quantidade - diferenca

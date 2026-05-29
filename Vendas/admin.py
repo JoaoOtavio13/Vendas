@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import *
 # Register your models here.
 
-@admin.register(Cliente)
-class ClienteAdmin(admin.ModelAdmin):
-    list_display = ['nome']
+@admin.register(Usuario)
+class UsuarioAdmin(admin.ModelAdmin):
+    list_display = ['username', 'nome', 'email', 'is_staff']
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -24,7 +24,7 @@ class EstoqueAdmin(admin.ModelAdmin):
 
 @admin.register(Venda)
 class VendaAdmin(admin.ModelAdmin):
-    list_display = ['cliente_id']
+    list_display = ['usuario_id']
 
 @admin.register(Venda_Produto)
 class VendaProdutoAdmin(admin.ModelAdmin):
