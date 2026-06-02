@@ -5,7 +5,7 @@
 {% block content %}
     <div class="page-title">Criar Venda</div>
     <div class="card">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn" type="submit">Salvar venda</button>

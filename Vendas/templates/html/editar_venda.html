@@ -6,7 +6,7 @@
     <div class="page-title">Adicionar item na Venda #{{ venda.id }}</div>
     <div class="card">
         <p class="meta">Cliente: {{ venda.usuario_id.nome|default:venda.usuario_id.username }}</p>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn" type="submit">Adicionar item</button>

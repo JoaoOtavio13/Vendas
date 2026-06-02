@@ -8,7 +8,10 @@
 
     <div class="grid">
         {% for produto in produtos %}
-            <div class="product">
+            <div class="product media-card">
+                {% if produto.imagem %}
+                    <img class="media-thumb" src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                {% endif %}
                 <h3>{{ produto.nome }}</h3>
                 <div class="meta">R$ {{ produto.preco }}</div>
                 <div class="meta">Mercadoria: {{ produto.mercadoria_id.nome }}</div>

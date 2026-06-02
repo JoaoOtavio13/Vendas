@@ -11,6 +11,7 @@ class UsuarioForm(UserCreationForm):
     endereco = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control'}))
     cidade = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    imagem = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,10 +25,11 @@ class UsuarioForm(UserCreationForm):
         self.fields['endereco'].widget.attrs.update({'class': 'form-control'})
         self.fields['cidade'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'}) 
+        self.fields['imagem'].widget.attrs.update({'class': 'form-control'})
 
     class Meta(UserCreationForm.Meta):
         model = Usuario
-        fields = ['username', 'nome', 'idade', 'cpf', 'telefone', 'endereco', 'cidade', 'email','password1', 'password2']
+        fields = ['username', 'nome', 'idade', 'cpf', 'telefone', 'endereco', 'cidade', 'email', 'imagem', 'password1', 'password2']
 
 class UsuarioEditForm(forms.ModelForm):
     nome= forms.CharField(
@@ -51,17 +53,21 @@ class UsuarioEditForm(forms.ModelForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
+    imagem = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Adiciona classe fomr-control aos campos padrão
         self.fields['username'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['imagem'].widget.attrs.update({'class': 'form-control'})
 
 #Formulário para criar categoria
 class CategoriaForm(forms.ModelForm):
+    imagem = forms.ImageField(required=True, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Categoria
-        fields = ['nome', 'descricao']
+        fields = ['nome', 'descricao', 'imagem']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'descricao': forms.Textarea(attrs={'class': 'form-control'}),
@@ -75,11 +81,13 @@ class CategoriaEditForm(forms.ModelForm):
     descricao = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-control'})
     )
+    imagem = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nome'].widget.attrs.update({'class': 'form-control'})
         self.fields['descricao'].widget.attrs.update({'class': 'form-control'})
+        self.fields['imagem'].widget.attrs.update({'class': 'form-control'})
 
 #Filtro para pesquisar categorias por nome
 class CategoriaFilterForm(django_filters.FilterSet):
@@ -91,9 +99,11 @@ class CategoriaFilterForm(django_filters.FilterSet):
 
 #Formulário para criar mercadoria
 class MercadoriaForm(forms.ModelForm):
+    imagem = forms.ImageField(required=True, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Mercadoria
-        fields = ['nome', 'categoria_id', 'descricao']
+        fields = ['nome', 'categoria_id', 'descricao', 'imagem']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'categoria_id': forms.Select(attrs={'class': 'form-control'}),
@@ -112,11 +122,13 @@ class MercadoriaEditForm(forms.ModelForm):
     descricao = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-control'})
     )
+    imagem = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nome'].widget.attrs.update({'class': 'form-control'})
         self.fields['descricao'].widget.attrs.update({'class': 'form-control'})
+        self.fields['imagem'].widget.attrs.update({'class': 'form-control'})
 
 #Filtro para pesquisar mercadorias por nome
 class MercadoriaFilterForm(django_filters.FilterSet):
@@ -128,9 +140,11 @@ class MercadoriaFilterForm(django_filters.FilterSet):
 
 #Formulário para criar produto
 class ProdutoForm(forms.ModelForm):
+    imagem = forms.ImageField(required=True, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Produto
-        fields = ['nome', 'mercadoria_id', 'preco']
+        fields = ['nome', 'mercadoria_id', 'preco', 'imagem']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'mercadoria_id': forms.Select(attrs={'class': 'form-control'}),
@@ -139,9 +153,11 @@ class ProdutoForm(forms.ModelForm):
 
 #Formulário para editar produto
 class ProdutoEditForm(forms.ModelForm):
+    imagem = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Produto
-        fields = ['nome', 'mercadoria_id', 'preco']
+        fields = ['nome', 'mercadoria_id', 'preco', 'imagem']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'mercadoria_id': forms.Select(attrs={'class': 'form-control'}),

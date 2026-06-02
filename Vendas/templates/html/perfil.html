@@ -5,6 +5,9 @@
 {% block content %}
     <div class="page-title">Perfil de {{ usuario.nome }}</div>
     <div class="card">
+        {% if usuario.imagem %}
+            <img class="profile-photo" src="{{ usuario.imagem.url }}" alt="{{ usuario.nome|default:usuario.username }}">
+        {% endif %}
         <p><strong>Username:</strong> {{ usuario.username }}</p>
         <p class="meta">Email: {{ usuario.email }}</p>
     </div>

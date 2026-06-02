@@ -6,8 +6,12 @@
     <div class="page-title">Mercadorias</div>
     <div class="grid">
         {% for m in mercadorias %}
-            <div class="card">
+            <div class="card media-card">
+                {% if m.imagem %}
+                    <img class="media-thumb" src="{{ m.imagem.url }}" alt="{{ m.nome }}">
+                {% endif %}
                 <h3>{{ m.nome }}</h3>
+                <div class="meta">Categoria: {{ m.categoria_id.nome }}</div>
                 <div class="meta">{{ m.descricao }}</div>
             </div>
         {% empty %}

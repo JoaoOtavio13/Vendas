@@ -9,20 +9,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <header class="header">
-        <div class="brand">Atacadão do João</div>
-        <nav>
-            <a href="/">Início</a>
-            <a href="/produtos/">Produtos</a>
-            <a href="/mercadorias/">Mercadorias</a>
-            <a href="/perfil/">Perfil</a>
-        </nav>
+    <header class="topbar">
+        <div class="brand-chip">Atacadão do João</div>
+        <div class="search-wrap">
+            <input type="text" class="search-input" placeholder="Pesquisar...">
+        </div>
+        <div class="topbar-icons" aria-label="Atalhos">
+            <a href="/produtos/" title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="/perfil/" title="Perfil"><i class="fa-regular fa-user"></i></a>
+        </div>
     </header>
-    <main class="container">
+    <main class="page-shell">
         {% block content %}{% endblock %}
     </main>
-    <footer class="footer">
-        &copy; {% now "Y" %} - Vendas App — Todos os direitos reservados
+    <footer class="footer-bar">
+        <div class="footer-social">
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+        <div class="footer-copy">&copy; {% now "Y" %} Atacadão do João - Todos os direitos reservados.</div>
     </footer>
 </body>
 </html>

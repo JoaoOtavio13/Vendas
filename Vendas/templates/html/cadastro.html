@@ -5,7 +5,7 @@
 {% block content %}
     <div class="page-title">Cadastro de usuário</div>
     <div class="card">
-        <form method="post" action="{% url 'cadastro' %}">
+        <form method="post" action="{% url 'cadastro' %}" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn" type="submit">Cadastrar</button>

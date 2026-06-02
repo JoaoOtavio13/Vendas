@@ -3,40 +3,55 @@
 {% block title %}Início - Atacadão do João{% endblock %}
 
 {% block content %}
-    <section class="hero">
-        <div class="lead">
-            <h1>Forneça o seu negócio com qualidade</h1>
-            <p class="muted">Encontre produtos para atacado com preços competitivos e entrega rápida. Navegue pelas categorias e monte seu pedido.</p>
-            <div class="hero-cta">
-                <a class="btn" href="/produtos/">Ver Produtos</a>
-                <a class="btn" href="/cadastro/">Criar Conta</a>
+    <section class="showcase">
+        <div class="cards-row">
+            {% for categoria in categorias %}
+            <article class="showcard">
+                {% if categoria.imagem %}
+                    <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
+                {% else %}
+                    <img src="https://picsum.photos/300/200?sig={{ categoria.id }}" alt="{{ categoria.nome }}">
+                {% endif %}
+                <div class="showcard-body">
+                    <h2>{{ categoria.nome }}</h2>
+                    <p>{{ categoria.descricao }}</p>
+                    <span class="card-badge">{{ categoria.total_mercadorias }} mercadorias</span>
+                </div>
+            </article>
+            {% empty %}
+            <article class="showcard">
+                <div class="showcard-body">
+                    <h2>Nenhuma categoria cadastrada</h2>
+                    <p>Cadastre categorias no sistema para que elas apareçam aqui.</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <a class="side-next" href="/produtos/" aria-label="Próximo">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+
+        <div class="slider-dots" aria-hidden="true">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+        <div class="dashboard-strip">
+            <div class="dashboard-item">
+                <strong>{{ total_mercadorias }}</strong>
+                <span>Mercadorias cadastradas</span>
             </div>
-        </div>
-        <div class="hero-image">
-            <img src="https://picsum.photos/520/320?store" alt="Loja">
-        </div>
-    </section>
-
-    <div class="page-title">Categorias em destaque</div>
-
-    <section class="grid">
-        <div class="product card">
-            <img src="https://picsum.photos/400/240?food" alt="Alimentos">
-            <h3>Alimentos</h3>
-            <p class="muted">Produtos alimentícios para revenda.</p>
-            <a class="btn" href="/produtos/">Ver</a>
-        </div>
-        <div class="product card">
-            <img src="https://picsum.photos/400/240?electronics" alt="Tecnologia">
-            <h3>Tecnologia</h3>
-            <p class="muted">Eletrônicos e acessórios.</p>
-            <a class="btn" href="/produtos/">Ver</a>
-        </div>
-        <div class="product card">
-            <img src="https://picsum.photos/400/240?furniture" alt="Móveis">
-            <h3>Móveis</h3>
-            <p class="muted">Móveis e decoração.</p>
-            <a class="btn" href="/produtos/">Ver</a>
+            <div class="dashboard-item">
+                <strong>{{ total_produtos }}</strong>
+                <span>Produtos cadastrados</span>
+            </div>
+            <div class="dashboard-item">
+                <strong>R$ {{ resumo_financeiro.faturamento_total }}</strong>
+                <span>Faturamento total</span>
+            </div>
         </div>
     </section>
 {% endblock %}

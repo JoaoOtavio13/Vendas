@@ -12,6 +12,7 @@ class Usuario(AbstractUser):
     endereco = models.TextField(blank=True, null=True)
     cidade = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    imagem = models.ImageField(upload_to='usuarios/', blank=True, null=True)
  
     def __str__(self):
         # Ensure __str__ always returns a string (fallback to username)
@@ -23,6 +24,7 @@ User = Usuario
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
+    imagem = models.ImageField(upload_to='categorias/', blank=True, null=True)
    
     def __str__(self):
         return self.nome
@@ -31,6 +33,7 @@ class Mercadoria(models.Model):
     nome = models.CharField(max_length=100)
     categoria_id = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     descricao = models.TextField()
+    imagem = models.ImageField(upload_to='mercadorias/', blank=True, null=True)
 
     def __str__(self):
         return self.nome   
@@ -39,6 +42,7 @@ class Produto(models.Model):
     nome = models.CharField(max_length=100)
     mercadoria_id = models.ForeignKey(Mercadoria, on_delete=models.CASCADE)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
+    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
 
     def __str__(self):
         return self.nome

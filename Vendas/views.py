@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login as login_django, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
@@ -15,12 +16,16 @@ from django.db import transaction
 
 #Listagem de categorias
 def index(request):
-    categorias = Categoria.objects.all()
+    categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
     paginator = Paginator(categorias, 3)
     page_number = request.GET.get('page')
     categorias = paginator.get_page(page_number)
+    resumo_financeiro = ResumoFinanceiro.get_solo()
     context={
-        'categorias': categorias
+        'categorias': categorias,
+        'resumo_financeiro': resumo_financeiro,
+        'total_produtos': Produto.objects.count(),
+        'total_mercadorias': Mercadoria.objects.count(),
     }
     return render(request, 'html/index.html', context)
 
@@ -104,7 +109,7 @@ def editar_venda(request, pk):
 #crud de usuarios
 def cadastro_usuario(request):
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
+        form = UsuarioForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Cadastro realizado com sucesso!')
@@ -180,7 +185,7 @@ def logout_view(request):
 def editar_usuario(request,id):
     usuario = Usuario.objects.get(id=request.user.id)
     if request.method == 'POST':
-        form = UsuarioEditForm(request.POST, instance=usuario)
+        form = UsuarioEditForm(request.POST, request.FILES, instance=usuario)
         if form.is_valid():
             form.save()
             messages.success(request, 'Perfil editado com sucesso!')
@@ -205,7 +210,7 @@ def criar_categoria(request):
         messages.error(request, 'Acesso negado. Apenas administradores podem criar categorias.')
         return redirect('index')
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
+        form = CategoriaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Categoria criada com sucesso!')
@@ -224,7 +229,7 @@ def editar_categoria(request, categoria_id):
         return redirect('index')
     categoria = get_object_or_404(Categoria, id=categoria_id)
     if request.method == 'POST':
-        form = CategoriaForm(request.POST, instance=categoria)
+        form = CategoriaForm(request.POST, request.FILES, instance=categoria)
         if form.is_valid():
             form.save()
             messages.success(request, 'Categoria editada com sucesso!')
@@ -268,7 +273,7 @@ def criar_mercadoria(request):
         messages.error(request, 'Acesso negado. Apenas administradores podem criar mercadorias.')
         return redirect('index')
     if request.method == 'POST':
-        form = MercadoriaForm(request.POST)
+        form = MercadoriaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Mercadoria criada com sucesso!')
@@ -287,7 +292,7 @@ def editar_mercadoria(request, mercadoria_id):
         return redirect('index')
     mercadoria = get_object_or_404(Mercadoria, id=mercadoria_id)
     if request.method == 'POST':
-        form = MercadoriaForm(request.POST, instance=mercadoria)
+        form = MercadoriaForm(request.POST, request.FILES, instance=mercadoria)
         if form.is_valid():
             form.save()
             messages.success(request, 'Mercadoria editada com sucesso!')
@@ -331,7 +336,7 @@ def criar_produto(request):
         messages.error(request, 'Acesso negado. Apenas administradores podem criar produtos.')
         return redirect('index')
     if request.method == 'POST':
-        form = ProdutoForm(request.POST)
+        form = ProdutoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Produto criado com sucesso!')
@@ -350,7 +355,7 @@ def editar_produto(request, produto_id):
         return redirect('index')
     produto = get_object_or_404(Produto, id=produto_id)
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, instance=produto)
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
             form.save()
             messages.success(request, 'Produto editado com sucesso!')
