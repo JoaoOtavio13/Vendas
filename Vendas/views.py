@@ -3,6 +3,7 @@ from .models import *
 from .forms import *
 from django.contrib.auth import authenticate, login as login_django, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -14,10 +15,14 @@ import json
 from django.db import transaction
 # Create your views here.
 
+
+def admin_required(view_func):
+    return user_passes_test(lambda user: user.is_staff, login_url='login')(view_func)
+
 #Listagem de categorias
 def index(request):
     categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
-    paginator = Paginator(categorias, 3)
+    paginator = Paginator(categorias, 3)  # 3 categorias por página
     page_number = request.GET.get('page')
     categorias = paginator.get_page(page_number)
     resumo_financeiro = ResumoFinanceiro.get_solo()
@@ -66,11 +71,8 @@ class VendaDetailView(DetailView):
 
 
 @login_required
+@admin_required
 def criar_venda(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem criar vendas.')
-        return redirect('index')
-
     if request.method == 'POST':
         form = VendaForm(request.POST)
         if form.is_valid():
@@ -85,12 +87,9 @@ def criar_venda(request):
 
 
 @login_required
+@admin_required
 def editar_venda(request, pk):
     venda = get_object_or_404(Venda, pk=pk)
-
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem editar vendas.')
-        return redirect('index')
 
     if request.method == 'POST':
         form = VendaProdutoForm(request.POST)
@@ -171,7 +170,9 @@ def login(request):
         if user is not None:
             login_django(request, user)
             messages.success(request, 'Login realizado com sucesso!')
-            return redirect('index')
+            if user.is_staff:
+                return redirect('index')
+            return redirect('perfil')
         else:
             messages.error(request, 'Credenciais inválidas. Tente novamente.')
     return render(request, 'html/login.html')
@@ -205,10 +206,8 @@ def excluir_usuario(request, id):
 
 #crud de categorias apenas para admin
 @login_required
+@admin_required
 def criar_categoria(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem criar categorias.')
-        return redirect('index')
     if request.method == 'POST':
         form = CategoriaForm(request.POST, request.FILES)
         if form.is_valid():
@@ -223,10 +222,8 @@ def criar_categoria(request):
     return render(request, 'html/criar_categoria.html', context) 
 
 @login_required
+@admin_required
 def editar_categoria(request, categoria_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem editar categorias.')
-        return redirect('index')
     categoria = get_object_or_404(Categoria, id=categoria_id)
     if request.method == 'POST':
         form = CategoriaForm(request.POST, request.FILES, instance=categoria)
@@ -243,10 +240,8 @@ def editar_categoria(request, categoria_id):
     return render(request, 'html/editar_categoria.html', context)
 
 @login_required
+@admin_required
 def excluir_categoria(request, categoria_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem excluir categorias.')
-        return redirect('index')
     categoria = get_object_or_404(Categoria, id=categoria_id)
     if request.method == 'POST':
         categoria.delete()
@@ -268,10 +263,8 @@ def filtrar_categorias(request):
 
 #crud de mercadorias apenas para admin
 @login_required
+@admin_required
 def criar_mercadoria(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem criar mercadorias.')
-        return redirect('index')
     if request.method == 'POST':
         form = MercadoriaForm(request.POST, request.FILES)
         if form.is_valid():
@@ -286,10 +279,8 @@ def criar_mercadoria(request):
     return render(request, 'html/criar_mercadoria.html', context)
 
 @login_required
+@admin_required
 def editar_mercadoria(request, mercadoria_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem editar mercadorias.')
-        return redirect('index')
     mercadoria = get_object_or_404(Mercadoria, id=mercadoria_id)
     if request.method == 'POST':
         form = MercadoriaForm(request.POST, request.FILES, instance=mercadoria)
@@ -306,10 +297,8 @@ def editar_mercadoria(request, mercadoria_id):
     return render(request, 'html/editar_mercadoria.html', context)
 
 @login_required
+@admin_required
 def excluir_mercadoria(request, mercadoria_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem excluir mercadorias.')
-        return redirect('index')
     mercadoria = get_object_or_404(Mercadoria, id=mercadoria_id)
     if request.method == 'POST':
         mercadoria.delete()
@@ -331,10 +320,8 @@ def filtrar_mercadorias(request):
 
 #crud de produtos apenas para admin
 @login_required
+@admin_required
 def criar_produto(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem criar produtos.')
-        return redirect('index')
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -349,10 +336,8 @@ def criar_produto(request):
     return render(request, 'html/criar_produto.html', context)
 
 @login_required
+@admin_required
 def editar_produto(request, produto_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem editar produtos.')
-        return redirect('index')
     produto = get_object_or_404(Produto, id=produto_id)
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES, instance=produto)
@@ -369,10 +354,8 @@ def editar_produto(request, produto_id):
     return render(request, 'html/editar_produto.html', context)
 
 @login_required
+@admin_required
 def excluir_produto(request, produto_id):
-    if not request.user.is_staff:
-        messages.error(request, 'Acesso negado. Apenas administradores podem excluir produtos.')
-        return redirect('index')
     produto = get_object_or_404(Produto, id=produto_id)
     if request.method == 'POST':
         produto.delete()
@@ -396,7 +379,7 @@ def filtrar_produtos(request):
 @login_required
 def perfil(request):
     usuario = Usuario.objects.get(id=request.user.id)
-    compras = Venda.objects.filter(usuario=request.user).order_by('-data')
+    compras = Venda.objects.filter(usuario_id=request.user).order_by('-data')
     compras_filter = VendaFilterForm(request.GET, queryset=compras)
     paginator = Paginator(compras, 5)
     page = request.GET.get('page')

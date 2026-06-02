@@ -15,10 +15,34 @@
             <input type="text" class="search-input" placeholder="Pesquisar...">
         </div>
         <div class="topbar-icons" aria-label="Atalhos">
-            <a href="/produtos/" title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="/perfil/" title="Perfil"><i class="fa-regular fa-user"></i></a>
+            {% if user.is_authenticated %}
+                <a href="/perfil/" title="Perfil"><i class="fa-regular fa-user"></i></a>
+                {% if user.is_staff %}
+                    <a href="/produtos/" title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></a>
+                {% endif %}
+                <a href="/logout/" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+            {% else %}
+                <a href="/login/" title="Entrar"><i class="fa-regular fa-user"></i></a>
+            {% endif %}
         </div>
     </header>
+    <nav class="rolebar">
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="/categoria/criar/">Categorias</a>
+            <a href="/mercadoria/criar/">Mercadorias</a>
+            <a href="/produto/criar/">Cadastrar Produtos</a>
+            <a href="/produtos/">Ver Produtos</a>
+            <a href="/venda/criar/">Vendas</a>
+            <a href="/perfil/">Perfil</a>
+        {% elif user.is_authenticated %}
+            <a href="/">Início</a>
+            <a href="/produtos/">Ver Produtos</a>
+            <a href="/perfil/">Meu perfil</a>
+        {% else %}
+            <a href="/login/">Login</a>
+            <a href="/cadastro/">Cadastro</a>
+        {% endif %}
+    </nav>
     <main class="page-shell">
         {% block content %}{% endblock %}
     </main>

@@ -4,7 +4,12 @@
 
 {% block content %}
     <div class="page-title">Produtos</div>
-    <p><a class="btn" href="/produto/criar/">Criar produto</a> <a class="btn" href="/produto/filtrar/">Filtrar</a></p>
+    <p>
+        {% if user.is_staff %}
+            <a class="btn" href="/produto/criar/">Criar produto</a>
+        {% endif %}
+        <a class="btn" href="/produto/filtrar/">Filtrar</a>
+    </p>
 
     <div class="grid">
         {% for produto in produtos %}
@@ -15,10 +20,12 @@
                 <h3>{{ produto.nome }}</h3>
                 <div class="meta">R$ {{ produto.preco }}</div>
                 <div class="meta">Mercadoria: {{ produto.mercadoria_id.nome }}</div>
+                {% if user.is_staff %}
                 <p>
                     <a href="/produto/editar/{{ produto.id }}/">Editar</a> |
                     <a href="/produto/excluir/{{ produto.id }}/">Excluir</a>
                 </p>
+                {% endif %}
             </div>
         {% empty %}
             <div class="card">Nenhum produto encontrado.</div>
