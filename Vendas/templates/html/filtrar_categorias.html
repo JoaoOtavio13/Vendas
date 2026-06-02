@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Filtrar Categorias</title>
+</head>
+<body>
+    <h1>Filtrar Categorias</h1>
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+    {% for c in categorias %}
+        <div>{{ c.nome }}</div>
+    {% empty %}
+        <p>Nenhuma categoria encontrada.</p>
+    {% endfor %}
+</body>
+</html>

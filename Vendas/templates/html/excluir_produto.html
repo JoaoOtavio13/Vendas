@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Excluir Produto</title>
+</head>
+<body>
+    <h1>Excluir Produto</h1>
+    <p>Tem certeza que deseja excluir "{{ produto.nome }}"?</p>
+    <form method="post">{% csrf_token %}
+        <button type="submit">Confirmar</button>
+    </form>
+</body>
+</html>

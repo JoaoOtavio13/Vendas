@@ -1,0 +1,30 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Venda #{{ venda.id }} - Atacadão do João{% endblock %}
+
+{% block content %}
+    <div class="page-title">Detalhe da Venda #{{ venda.id }}</div>
+    <div class="card">
+        <div class="meta">Data: {{ venda.data }}</div>
+        <div class="meta">Cliente: {% if venda.usuario_id %}{{ venda.usuario_id.username }} - {{ venda.usuario_id.nome }}{% else %}--{% endif %}</div>
+    </div>
+
+    <div class="card">
+        <h3>Itens</h3>
+        <div>
+            {% for item in venda.itens.all %}
+                <div class="product">
+                    <h3>{{ item.produto_id.nome }}</h3>
+                    <div class="meta">Qtd: {{ item.quantidade }} — R$ {{ item.produto_id.preco }}</div>
+                    <div class="meta">Subtotal: R$ {{ item.subtotal }}</div>
+                </div>
+            {% empty %}
+                <div class="card">Nenhum item nesta venda.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card"><strong>Total:</strong> R$ {{ venda.total }}</div>
+
+    <p><a class="btn" href="/produtos/">Voltar à lista de produtos</a></p>
+{% endblock %}

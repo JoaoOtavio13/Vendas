@@ -29,3 +29,8 @@ class VendaAdmin(admin.ModelAdmin):
 @admin.register(Venda_Produto)
 class VendaProdutoAdmin(admin.ModelAdmin):
     list_display = ['venda_id']
+
+
+@admin.register(ResumoFinanceiro)
+class ResumoFinanceiroAdmin(admin.ModelAdmin):
+    list_display = ['faturamento_total']

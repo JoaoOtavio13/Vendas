@@ -1,0 +1,38 @@
+:root{
+    --bg:#f4f6f8;
+    --primary:#0d6efd;
+    --text:#222;
+    --muted:#666;
+}
+body{font-family:Segoe UI, Arial, sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0}
+.header{background:#fff;border-bottom:1px solid #e1e4e8;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+.header .brand{font-weight:700;color:var(--primary);font-size:1.25rem}
+.header nav a{margin-left:12px;color:var(--text);text-decoration:none}
+.container{max-width:1100px;margin:24px auto;padding:0 16px}
+.card{background:#fff;border:1px solid #e6e9ee;padding:16px;border-radius:8px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,0.03)}
+.footer{background:#fff;border-top:1px solid #e1e4e8;padding:12px 20px;text-align:center;color:var(--muted);font-size:0.9rem;margin-top:40px}
+.page-title{font-size:1.75rem;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.product{padding:12px;border:1px solid #eee;border-radius:8px;background:#fff}
+.product h3{margin:0 0 8px 0}
+.btn{display:inline-block;padding:8px 12px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none}
+.meta{color:var(--muted);font-size:0.9rem}
+
+/* Hero */
+.hero{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#ffffff 0%, #f7fbff 100%);padding:28px;border-radius:10px;margin-bottom:20px}
+.hero .lead{max-width:64%}
+.hero h1{margin:0 0 8px 0;font-size:2rem}
+.hero p{margin:0;color:var(--muted)}
+.hero .hero-cta{margin-top:12px}
+.hero .hero-cta .btn{padding:10px 16px}
+.hero .hero-image{width:32%;text-align:right}
+.hero .hero-image img{max-width:100%;border-radius:8px}
+
+/* Product card image */
+.product img{width:100%;height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px}
+.product .meta{margin-top:6px}
+
+/* Small helpers */
+.muted{color:var(--muted)}
+
+@media(max-width:800px){.hero{flex-direction:column}.hero .hero-image{width:100%;text-align:center;margin-top:12px}.container{padding:0 12px}}

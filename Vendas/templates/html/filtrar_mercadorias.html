@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Filtrar Mercadorias</title>
+</head>
+<body>
+    <h1>Filtrar Mercadorias</h1>
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+    {% for m in mercadorias %}
+        <div>{{ m.nome }}</div>
+    {% empty %}
+        <p>Nenhuma mercadoria encontrada.</p>
+    {% endfor %}
+</body>
+</html>

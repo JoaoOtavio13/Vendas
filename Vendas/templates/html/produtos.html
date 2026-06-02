@@ -1,0 +1,36 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Produtos - Atacadão do João{% endblock %}
+
+{% block content %}
+    <div class="page-title">Produtos</div>
+    <p><a class="btn" href="/produto/criar/">Criar produto</a> <a class="btn" href="/produto/filtrar/">Filtrar</a></p>
+
+    <div class="grid">
+        {% for produto in produtos %}
+            <div class="product">
+                <h3>{{ produto.nome }}</h3>
+                <div class="meta">R$ {{ produto.preco }}</div>
+                <div class="meta">Mercadoria: {{ produto.mercadoria_id.nome }}</div>
+                <p>
+                    <a href="/produto/editar/{{ produto.id }}/">Editar</a> |
+                    <a href="/produto/excluir/{{ produto.id }}/">Excluir</a>
+                </p>
+            </div>
+        {% empty %}
+            <div class="card">Nenhum produto encontrado.</div>
+        {% endfor %}
+    </div>
+
+    {% if produtos.has_other_pages %}
+        <div class="card">
+            {% if produtos.has_previous %}
+                <a href="?page={{ produtos.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="meta">Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}</span>
+            {% if produtos.has_next %}
+                <a href="?page={{ produtos.next_page_number }}">Próxima</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

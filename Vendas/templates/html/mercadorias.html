@@ -1,0 +1,17 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Mercadorias - Atacadão do João{% endblock %}
+
+{% block content %}
+    <div class="page-title">Mercadorias</div>
+    <div class="grid">
+        {% for m in mercadorias %}
+            <div class="card">
+                <h3>{{ m.nome }}</h3>
+                <div class="meta">{{ m.descricao }}</div>
+            </div>
+        {% empty %}
+            <div class="card">Sem mercadorias.</div>
+        {% endfor %}
+    </div>
+{% endblock %}

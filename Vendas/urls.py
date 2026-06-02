@@ -1,5 +1,6 @@
 from django.urls import path
 from Vendas.views import *
+from Vendas.views import ProdutoListView, VendaDetailView
 
 urlpatterns = [
     path('', index, name='index'),
@@ -19,10 +20,14 @@ urlpatterns = [
     path('mercadoria/editar/<int:mercadoria_id>/', editar_mercadoria, name='editar_mercadoria'),
     path('mercadoria/excluir/<int:mercadoria_id>/', excluir_mercadoria, name='excluir_mercadoria'),
     path('mercadoria/filtrar/', filtrar_mercadorias, name='filtrar_mercadorias'),
-    path('produtos/', produtos, name='produtos'),
+    path('produtos/', ProdutoListView.as_view(), name='produtos'),
     path('produto/criar/', criar_produto, name='criar_produto'),
     path('produto/editar/<int:produto_id>/', editar_produto, name='editar_produto'),
     path('produto/excluir/<int:produto_id>/', excluir_produto, name='excluir_produto'),
     path('produto/filtrar/', filtrar_produtos, name='filtrar_produtos'),
     path('perfil/', perfil, name='perfil'),
+    path('venda/<int:pk>/', VendaDetailView.as_view(), name='venda_detail'),
+    path('venda/criar/', criar_venda, name='criar_venda'),
+    path('venda/<int:pk>/editar/', editar_venda, name='editar_venda'),
+    path('api/register/', api_register, name='api_register'),
 ]

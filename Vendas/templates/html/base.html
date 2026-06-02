@@ -1,0 +1,28 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{% block title %}Vendas{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'Vendas/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="brand">Atacadão do João</div>
+        <nav>
+            <a href="/">Início</a>
+            <a href="/produtos/">Produtos</a>
+            <a href="/mercadorias/">Mercadorias</a>
+            <a href="/perfil/">Perfil</a>
+        </nav>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+        &copy; {% now "Y" %} - Vendas App — Todos os direitos reservados
+    </footer>
+</body>
+</html>

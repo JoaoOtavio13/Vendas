@@ -5,6 +5,12 @@ from django.contrib.auth import authenticate, login as login_django, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse, HttpResponse
+import json
+from django.db import transaction
 # Create your views here.
 
 #Listagem de categorias
@@ -16,7 +22,7 @@ def index(request):
     context={
         'categorias': categorias
     }
-    return render(request, 'index.html', context)
+    return render(request, 'html/index.html', context)
 
 #Listagem de mercadorias
 def mercadorias(request):
@@ -27,7 +33,7 @@ def mercadorias(request):
     context={
         'mercadorias': mercadorias
     }
-    return render(request, 'mercadorias.html', context)
+    return render(request, 'html/mercadorias.html', context)
 
 #Listagem de produtos
 def produtos(request):
@@ -38,7 +44,62 @@ def produtos(request):
     context={
         'produtos': produtos
     }
-    return render(request, 'produtos.html', context)
+    return render(request, 'html/produtos.html', context)
+
+
+class ProdutoListView(ListView):
+    model = Produto
+    template_name = 'html/produtos.html'
+    context_object_name = 'produtos'
+    paginate_by = 3
+
+
+class VendaDetailView(DetailView):
+    model = Venda
+    template_name = 'html/venda.html'
+    context_object_name = 'venda'
+
+
+@login_required
+def criar_venda(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Acesso negado. Apenas administradores podem criar vendas.')
+        return redirect('index')
+
+    if request.method == 'POST':
+        form = VendaForm(request.POST)
+        if form.is_valid():
+            venda = form.save(commit=False)
+            venda.save()
+            messages.success(request, f'Venda #{venda.id} criada com sucesso! Agora adicione os itens.')
+            return redirect('editar_venda', pk=venda.pk)
+    else:
+        form = VendaForm()
+
+    return render(request, 'html/criar_venda.html', {'form': form})
+
+
+@login_required
+def editar_venda(request, pk):
+    venda = get_object_or_404(Venda, pk=pk)
+
+    if not request.user.is_staff:
+        messages.error(request, 'Acesso negado. Apenas administradores podem editar vendas.')
+        return redirect('index')
+
+    if request.method == 'POST':
+        form = VendaProdutoForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            if item.venda_id_id != venda.id:
+                item.venda_id = venda
+            item.save()
+            messages.success(request, 'Item adicionado à venda com sucesso!')
+            return redirect('venda_detail', pk=venda.pk)
+    else:
+        form = VendaProdutoForm(initial={'venda_id': venda})
+
+    return render(request, 'html/editar_venda.html', {'form': form, 'venda': venda})
 
 #crud de usuarios
 def cadastro_usuario(request):
@@ -53,7 +114,49 @@ def cadastro_usuario(request):
     context = {
         'form': form
     }
-    return render(request, 'cadastro.html', context)
+    return render(request, 'html/cadastro.html', context)
+
+
+@csrf_exempt
+def api_register(request):
+    """API endpoint (test-only) to create a user via JSON POST.
+    This view is csrf_exempt for ease of testing from Insomnia/Postman.
+    Remove csrf_exempt for production or secure it properly.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'detail': 'Method not allowed'}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'detail': 'Invalid JSON'}, status=400)
+
+    username = payload.get('username')
+    password1 = payload.get('password1')
+    password2 = payload.get('password2')
+    email = payload.get('email')
+
+    if not username or not password1 or not password2:
+        return JsonResponse({'detail': 'username and passwords are required'}, status=400)
+    if password1 != password2:
+        return JsonResponse({'detail': 'passwords do not match'}, status=400)
+
+    # create user
+    try:
+        user = Usuario.objects.create_user(username=username, email=email, password=password1)
+        # optional fields
+        user.nome = payload.get('nome') or ''
+        user.idade = payload.get('idade') or None
+        user.cpf = payload.get('cpf') or ''
+        user.telefone = payload.get('telefone') or ''
+        user.endereco = payload.get('endereco') or ''
+        user.cidade = payload.get('cidade') or ''
+        # email already set above
+        user.save()
+    except Exception as e:
+        return JsonResponse({'detail': str(e)}, status=400)
+
+    return JsonResponse({'id': user.id, 'username': user.username}, status=201)
 
 def login(request):
     if request.method == 'POST':
@@ -66,7 +169,7 @@ def login(request):
             return redirect('index')
         else:
             messages.error(request, 'Credenciais inválidas. Tente novamente.')
-    return render(request, 'login.html')
+    return render(request, 'html/login.html')
 
 def logout_view(request):
     logout(request)
@@ -87,7 +190,7 @@ def editar_usuario(request,id):
     context = {
         'form': form
     }
-    return render(request, 'editar_usuario.html', context)
+    return render(request, 'html/editar_usuario.html', context)
 
 @login_required
 def excluir_usuario(request, id):
@@ -112,7 +215,7 @@ def criar_categoria(request):
     context = {
         'form': form
     }
-    return render(request, 'criar_categoria.html', context) 
+    return render(request, 'html/criar_categoria.html', context) 
 
 @login_required
 def editar_categoria(request, categoria_id):
@@ -132,7 +235,7 @@ def editar_categoria(request, categoria_id):
         'form': form,
         'categoria': categoria
     }
-    return render(request, 'editar_categoria.html', context)
+    return render(request, 'html/editar_categoria.html', context)
 
 @login_required
 def excluir_categoria(request, categoria_id):
@@ -147,7 +250,7 @@ def excluir_categoria(request, categoria_id):
     context = {
         'categoria': categoria
     }
-    return render(request, 'excluir_categoria.html', context)
+    return render(request, 'html/excluir_categoria.html', context)
 
 def filtrar_categorias(request):
     form = CategoriaFilterForm(request.GET)
@@ -156,7 +259,7 @@ def filtrar_categorias(request):
         'form': form,
         'categorias': categorias
     }
-    return render(request, 'filtrar_categorias.html', context)
+    return render(request, 'html/filtrar_categorias.html', context)
 
 #crud de mercadorias apenas para admin
 @login_required
@@ -175,7 +278,7 @@ def criar_mercadoria(request):
     context = {
         'form': form
     }
-    return render(request, 'criar_mercadoria.html', context)
+    return render(request, 'html/criar_mercadoria.html', context)
 
 @login_required
 def editar_mercadoria(request, mercadoria_id):
@@ -195,7 +298,7 @@ def editar_mercadoria(request, mercadoria_id):
         'form': form,
         'mercadoria': mercadoria
     }
-    return render(request, 'editar_mercadoria.html', context)
+    return render(request, 'html/editar_mercadoria.html', context)
 
 @login_required
 def excluir_mercadoria(request, mercadoria_id):
@@ -210,7 +313,7 @@ def excluir_mercadoria(request, mercadoria_id):
     context = {
         'mercadoria': mercadoria
     }
-    return render(request, 'excluir_mercadoria.html', context)
+    return render(request, 'html/excluir_mercadoria.html', context)
 
 def filtrar_mercadorias(request):
     form = MercadoriaFilterForm(request.GET)
@@ -219,7 +322,7 @@ def filtrar_mercadorias(request):
         'form': form,
         'mercadorias': mercadorias
     }
-    return render(request, 'filtrar_mercadorias.html', context)
+    return render(request, 'html/filtrar_mercadorias.html', context)
 
 #crud de produtos apenas para admin
 @login_required
@@ -238,7 +341,7 @@ def criar_produto(request):
     context = {
         'form': form
     }
-    return render(request, 'criar_produto.html', context)
+    return render(request, 'html/criar_produto.html', context)
 
 @login_required
 def editar_produto(request, produto_id):
@@ -258,7 +361,7 @@ def editar_produto(request, produto_id):
         'form': form,
         'produto': produto
     }
-    return render(request, 'editar_produto.html', context)
+    return render(request, 'html/editar_produto.html', context)
 
 @login_required
 def excluir_produto(request, produto_id):
@@ -273,7 +376,7 @@ def excluir_produto(request, produto_id):
     context = {
         'produto': produto
     }
-    return render(request, 'excluir_produto.html', context)
+    return render(request, 'html/excluir_produto.html', context)
 
 def filtrar_produtos(request):
     form = ProdutoFilterForm(request.GET)
@@ -282,7 +385,7 @@ def filtrar_produtos(request):
         'form': form,
         'produtos': produtos
     }
-    return render(request, 'filtrar_produtos.html', context)
+    return render(request, 'html/filtrar_produtos.html', context)
 
 #perfil do usuário
 @login_required
@@ -299,5 +402,5 @@ def perfil(request):
         'compras_filter': compras_filter,
         'compras': compras
     }
-    return render(request, 'perfil.html', context) 
+    return render(request, 'html/perfil.html', context) 
 

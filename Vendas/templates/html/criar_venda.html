@@ -1,0 +1,14 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Criar Venda - Atacadão do João{% endblock %}
+
+{% block content %}
+    <div class="page-title">Criar Venda</div>
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn" type="submit">Salvar venda</button>
+        </form>
+    </div>
+{% endblock %}

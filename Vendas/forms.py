@@ -156,6 +156,26 @@ class ProdutoFilterForm(django_filters.FilterSet):
         model = Produto
         fields = ['nome']
 
+
+class VendaForm(forms.ModelForm):
+    class Meta:
+        model = Venda
+        fields = ['usuario_id']
+        widgets = {
+            'usuario_id': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+
+class VendaProdutoForm(forms.ModelForm):
+    class Meta:
+        model = Venda_Produto
+        fields = ['venda_id', 'produto_id', 'quantidade']
+        widgets = {
+            'venda_id': forms.Select(attrs={'class': 'form-control'}),
+            'produto_id': forms.Select(attrs={'class': 'form-control'}),
+            'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
 #Filtro de compras do cliente
 class VendaFilterForm(django_filters.FilterSet):
     data = django_filters.DateFromToRangeFilter(label='Data', widget=django_filters.widgets.RangeWidget(attrs={'class': 'form-control', 'type': 'date'}))

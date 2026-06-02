@@ -1,0 +1,42 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Início - Atacadão do João{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="lead">
+            <h1>Forneça o seu negócio com qualidade</h1>
+            <p class="muted">Encontre produtos para atacado com preços competitivos e entrega rápida. Navegue pelas categorias e monte seu pedido.</p>
+            <div class="hero-cta">
+                <a class="btn" href="/produtos/">Ver Produtos</a>
+                <a class="btn" href="/cadastro/">Criar Conta</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://picsum.photos/520/320?store" alt="Loja">
+        </div>
+    </section>
+
+    <div class="page-title">Categorias em destaque</div>
+
+    <section class="grid">
+        <div class="product card">
+            <img src="https://picsum.photos/400/240?food" alt="Alimentos">
+            <h3>Alimentos</h3>
+            <p class="muted">Produtos alimentícios para revenda.</p>
+            <a class="btn" href="/produtos/">Ver</a>
+        </div>
+        <div class="product card">
+            <img src="https://picsum.photos/400/240?electronics" alt="Tecnologia">
+            <h3>Tecnologia</h3>
+            <p class="muted">Eletrônicos e acessórios.</p>
+            <a class="btn" href="/produtos/">Ver</a>
+        </div>
+        <div class="product card">
+            <img src="https://picsum.photos/400/240?furniture" alt="Móveis">
+            <h3>Móveis</h3>
+            <p class="muted">Móveis e decoração.</p>
+            <a class="btn" href="/produtos/">Ver</a>
+        </div>
+    </section>
+{% endblock %}

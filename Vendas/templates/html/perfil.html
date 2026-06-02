@@ -1,0 +1,23 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Perfil - {{ usuario.username }}{% endblock %}
+
+{% block content %}
+    <div class="page-title">Perfil de {{ usuario.nome }}</div>
+    <div class="card">
+        <p><strong>Username:</strong> {{ usuario.username }}</p>
+        <p class="meta">Email: {{ usuario.email }}</p>
+    </div>
+
+    <h2>Compras</h2>
+    <div class="grid">
+    {% for c in compras %}
+        <div class="card">
+            <div>#{{ c.id }} - {{ c.data }}</div>
+            <div class="meta">Total: R$ {{ c.total }}</div>
+        </div>
+    {% empty %}
+        <div class="card">Sem compras.</div>
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Cadastro - Atacadão do João{% endblock %}
+
+{% block content %}
+    <div class="page-title">Cadastro de usuário</div>
+    <div class="card">
+        <form method="post" action="{% url 'cadastro' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn" type="submit">Cadastrar</button>
+        </form>
+    </div>
+{% endblock %}
