@@ -118,17 +118,21 @@ Observações adicionais sobre 3NF e potenciais melhorias:
 
 ---
 
-## Recomendações e próximos passos (práticos)
-1. Se `cpf` deve ser único, alterar `Usuario.cpf` para `models.CharField(..., unique=True)` e criar migração/clean-up de dados duplicados.
-2. Padronizar nomes das colunas: renomear fisicamente `cliente_id_id` → `usuario_id` e `produto_id_id` → `produto_id` via migração manual (SQLite exige recriação de tabela ou uso de `RunSQL` cuidadoso).
-3. Adicionar scripts SQL de exemplo (`sql/examples_sqlite.sql`) com consultas JOIN, GROUP BY/HAVING, INSERT/UPDATE/DELETE para material didático.
-4. Gerar o DER visual (brModelo ou diagrama ER em `docs/DER.png`) para anexar ao trabalho.
+## Atualizações Recentes (Junho/2026)
+
+### Correções de Modelo
+- `Venda` model: campo FK `usuario_id` (db_column: `cliente_id_id`) — as views foram corrigidas para usar `usuario_id` em vez de `usuario` nas queries (ex: `Venda.objects.filter(usuario_id=request.user)`)
+
+### Restrições de Acesso (Admin)
+- Dashboards e dados financeiros visíveis apenas para `user.is_staff`
+- Operações CRUD protegidas no backend com `@admin_required`
+- Templates condicionais: botões "Criar/Editar/Excluir" ocultos para usuários comuns
+
+### Melhorias de Layout
+- CSS refatorado com design moderno: fonte Inter, variáveis CSS, animações
+- Logo do sistema: `Vendas/static/Vendas/images/image.png`
+- Header e navbar sticky com tema escuro
+- Design responsivo (mobile-first)
 
 ---
 
-Se quiser, eu crio agora os artefatos solicitados:
-- `docs/MR_mapping.md` (este arquivo gerado)
-- `sql/examples_sqlite.sql` com exemplos práticos
-- `docs/DER.md` ou uma imagem do diagrama ER
-
-Diga qual deles prefere que eu gere em seguida.

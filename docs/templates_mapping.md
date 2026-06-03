@@ -22,3 +22,39 @@
 - perfil: Vendas/templates/html/perfil.html
 
 Observação: os templates estão em `Vendas/templates/html/`. As views foram atualizadas para usar esse caminho (render(request, 'html/<nome>.html')).
+- editar_venda: Vendas/templates/html/editar_venda.html
+- venda_detail / `VendaDetailView`: Vendas/templates/html/venda.html
+- criar_venda: Vendas/templates/html/criar_venda.html
+
+## Template Base (Vendas/templates/html/base.html)
+- Logo: `<img src="{% static 'Vendas/images/image.png' %}" alt="Atacadão do João">` no `.brand-chip`
+- Navegação (`.rolebar`) difere por perfil:
+  - **Admin**: Categorias, Mercadorias, Cadastrar Produtos, Ver Produtos, Vendas, Perfil
+  - **Usuário comum**: Início, Ver Produtos, Meu perfil
+  - **Anônimo**: Login, Cadastro
+- Dashboard (`.dashboard-strip`) visível apenas para admin (`{% if user.is_staff %}`)
+
+## Restrições de Admin nos Templates
+- `index.html`: dashboard (Mercadorias cadastradas, Produtos cadastrados, Faturamento total) visível apenas para `user.is_staff`
+- `produtos.html`: botão "Criar produto" e links "Editar/Excluir" visíveis apenas para `user.is_staff`
+- Views protegidas no backend com decorador `@admin_required`:
+  - `criar_produto`, `editar_produto`, `excluir_produto`
+  - `criar_categoria`, `editar_categoria`, `excluir_categoria`
+  - `criar_mercadoria`, `editar_mercadoria`, `excluir_mercadoria`
+  - `criar_venda`, `editar_venda`
+
+## Estilo (Vendas/static/Vendas/css/style.css)
+- Design moderno com variáveis CSS, fonte Inter (Google Fonts)
+- Header escuro (`#1a1a2e`) com logo terracota (`#e07a5f`)
+- Header e navbar sticky com efeitos hover
+- Cards com sombras, bordas arredondadas e animações de fade-in
+- Botões estilo pílula com transições suaves
+- Layout responsivo (mobile-first, breakpoint 768px)
+- Animações stagger (fadeInUp) nos cards de produtos
+
+## Arquivos Estáticos
+- Logo: `Vendas/static/Vendas/images/image.png`
+- CSS: `Vendas/static/Vendas/css/style.css`
+
+## Correções Recentes
+- `perfil` view: corrigido `usuario=request.user` → `usuario_id=request.user` (FieldError)
