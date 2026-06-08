@@ -1,0 +1,60 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Categorias - Atacadão do João{% endblock %}
+
+{% block content %}
+    <section class="showcase">
+        <div class="page-title">Categorias</div>
+        <p style="text-align: center; margin-bottom: 20px;">
+            {% if user.is_staff %}
+            <a class="btn" href="/categoria/criar/">Criar categoria</a>
+            {% endif %}
+            <a class="btn" href="/categoria/filtrar/">Filtrar</a>
+        </p>
+        <div class="cards-row">
+            {% for categoria in categorias %}
+                <div style="margin-bottom: 20px;">
+                    <a href="{% url 'mercadorias_categoria' categoria.id %}" class="showcard-link">
+                        <article class="showcard">
+                            {% if categoria.imagem %}
+                                <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
+                            {% else %}
+                                <img src="https://picsum.photos/300/200?sig={{ categoria.id }}" alt="{{ categoria.nome }}">
+                            {% endif %}
+                            <div class="showcard-body">
+                                <h2>{{ categoria.nome }}</h2>
+                                <p>{{ categoria.descricao }}</p>
+                                <span class="card-badge">{{ categoria.total_mercadorias }} mercadorias</span>
+                            </div>
+                        </article>
+                    </a>
+                    {% if user.is_staff %}
+                    <div style="padding: 10px; text-align: center;">
+                        <a href="/categoria/editar/{{ categoria.id }}/">Editar</a> |
+                        <a href="/categoria/excluir/{{ categoria.id }}/">Excluir</a>
+                    </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhuma categoria encontrada</h2>
+                        <p>Não há categorias cadastradas.</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if categorias.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
+            {% if categorias.has_previous %}
+                <a class="btn" href="?page={{ categorias.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="meta" style="margin: 0 15px;">Página {{ categorias.number }} de {{ categorias.paginator.num_pages }}</span>
+            {% if categorias.has_next %}
+                <a class="btn" href="?page={{ categorias.next_page_number }}">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+{% endblock %}
