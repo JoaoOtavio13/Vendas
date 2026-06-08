@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{% block title %}Vendas{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'Vendas/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'Vendas/css/style.css' %}?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
         <header class="topbar">
-            <div class="brand-chip">Atacadão do João</div>
+            <a href="/" class="brand-chip" style="text-decoration: none;">Atacadão do João</a>
             <div class="search-wrap">
                 <input type="text" class="search-input" placeholder="Pesquisar...">
             </div>

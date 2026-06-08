@@ -22,6 +22,10 @@
     box-sizing: border-box;
 }
 
+a, a:link, a:visited, a:hover, a:active {
+    text-decoration: none !important;
+}
+
 body {
     font-family: 'Inter', Segoe UI, Arial, sans-serif;
     background: var(--bg);
@@ -159,6 +163,34 @@ body {
 }
 
 /* ========== MAIN CONTENT ========== */
+.form-control {
+    width: 100%;
+    padding: 10px 16px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Inter', Segoe UI, Arial, sans-serif;
+    color: var(--text);
+    background: var(--card);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
 .page-shell {
     width: 100%;
     max-width: 1200px;
@@ -237,6 +269,14 @@ body {
     text-align: center;
     gap: 12px;
     flex: 1;
+}
+
+.showcard-link {
+    display: block;
+    text-decoration: none !important;
+    color: inherit;
+    border: none;
+    outline: none;
 }
 
 .showcard-body h2 {
