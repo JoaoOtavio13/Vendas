@@ -5,22 +5,33 @@
 {% block content %}
     <section class="showcase">
         <div class="page-title">{% if categoria %}Mercadorias - {{ categoria.nome }}{% else %}Mercadorias{% endif %}</div>
+        <p style="text-align: center; margin-bottom: 20px;">
+            <a class="btn" href="/mercadoria/filtrar/">Filtrar</a>
+        </p>
         <div class="cards-row">
             {% for m in mercadorias %}
-                <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
-                    <article class="showcard">
-                        {% if m.imagem %}
-                            <img src="{{ m.imagem.url }}" alt="{{ m.nome }}">
-                        {% else %}
-                            <img src="https://picsum.photos/300/200?sig={{ m.id }}" alt="{{ m.nome }}">
-                        {% endif %}
-                        <div class="showcard-body">
-                            <h2>{{ m.nome }}</h2>
-                            <p>{{ m.descricao }}</p>
-                            <span class="card-badge">{{ m.categoria_id.nome }}</span>
-                        </div>
-                    </article>
-                </a>
+                <div style="margin-bottom: 20px;">
+                    <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
+                        <article class="showcard">
+                            {% if m.imagem %}
+                                <img src="{{ m.imagem.url }}" alt="{{ m.nome }}">
+                            {% else %}
+                                <img src="https://picsum.photos/300/200?sig={{ m.id }}" alt="{{ m.nome }}">
+                            {% endif %}
+                            <div class="showcard-body">
+                                <h2>{{ m.nome }}</h2>
+                                <p>{{ m.descricao }}</p>
+                                <span class="card-badge">{{ m.categoria_id.nome }}</span>
+                            </div>
+                        </article>
+                    </a>
+                    {% if user.is_staff %}
+                    <div style="padding: 10px; text-align: center;">
+                        <a href="/mercadoria/editar/{{ m.id }}/">Editar</a> |
+                        <a href="/mercadoria/excluir/{{ m.id }}/">Excluir</a>
+                    </div>
+                    {% endif %}
+                </div>
             {% empty %}
                 <article class="showcard">
                     <div class="showcard-body">
