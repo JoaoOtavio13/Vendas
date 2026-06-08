@@ -28,6 +28,12 @@
                             <p>{{ m.descricao }}</p>
                             <span class="card-badge">{{ m.categoria_id.nome }}</span>
                         </div>
+                        {% if user.is_staff %}
+                        <div style="padding: 10px; text-align: center;">
+                            <a href="/mercadoria/editar/{{ m.id }}/">Editar</a> |
+                            <a href="/mercadoria/excluir/{{ m.id }}/">Excluir</a>
+                        </div>
+                        {% endif %}
                     </article>
                 </a>
             {% empty %}
