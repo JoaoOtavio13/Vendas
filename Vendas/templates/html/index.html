@@ -6,7 +6,7 @@
     <section class="showcase">
         <div class="cards-row">
             {% for categoria in categorias %}
-                <a href="{% url 'mercadorias' categoria.id %}" class="showcard-link">
+                <a href="{% url 'mercadorias_categoria' categoria.id %}" class="showcard-link">
                     <article class="showcard">
                         {% if categoria.imagem %}
                             <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
