@@ -223,6 +223,17 @@ def excluir_usuario(request, id):
 
 #crud de categorias apenas para admin
 @login_required
+def categorias(request):
+    categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
+    paginator = Paginator(categorias, 3)
+    page_number = request.GET.get('page')
+    categorias = paginator.get_page(page_number)
+    context={
+        'categorias': categorias
+    }
+    return render(request, 'html/categorias.html', context)
+
+@login_required
 @admin_required
 def criar_categoria(request):
     if request.method == 'POST':
