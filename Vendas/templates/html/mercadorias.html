@@ -1,19 +1,21 @@
 {% extends 'html/base.html' %}
 
-{% block title %}Mercadorias - Atacadão do João{% endblock %}
+{% block title %}{% if categoria %}{{ categoria.nome }} - {% endif %}Mercadorias - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">Mercadorias</div>
+    <div class="page-title">{% if categoria %}Mercadorias - {{ categoria.nome }}{% else %}Mercadorias{% endif %}</div>
     <div class="grid">
         {% for m in mercadorias %}
-            <div class="card media-card">
-                {% if m.imagem %}
-                    <img class="media-thumb" src="{{ m.imagem.url }}" alt="{{ m.nome }}">
-                {% endif %}
-                <h3>{{ m.nome }}</h3>
-                <div class="meta">Categoria: {{ m.categoria_id.nome }}</div>
-                <div class="meta">{{ m.descricao }}</div>
-            </div>
+            <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
+                <div class="card media-card">
+                    {% if m.imagem %}
+                        <img class="media-thumb" src="{{ m.imagem.url }}" alt="{{ m.nome }}">
+                    {% endif %}
+                    <h3>{{ m.nome }}</h3>
+                    <div class="meta">Categoria: {{ m.categoria_id.nome }}</div>
+                    <div class="meta">{{ m.descricao }}</div>
+                </div>
+            </a>
         {% empty %}
             <div class="card">Sem mercadorias.</div>
         {% endfor %}

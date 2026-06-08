@@ -1,9 +1,9 @@
 {% extends 'html/base.html' %}
 
-{% block title %}Produtos - Atacadão do João{% endblock %}
+{% block title %}{% if mercadoria %}{{ mercadoria.nome }} - {% endif %}Produtos - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">Produtos</div>
+    <div class="page-title">{% if mercadoria %}Produtos - {{ mercadoria.nome }}{% else %}Produtos{% endif %}</div>
     <p>
         {% if user.is_staff %}
             <a class="btn" href="/produto/criar/">Criar produto</a>

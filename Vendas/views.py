@@ -15,14 +15,14 @@ import json
 from django.db import transaction
 # Create your views here.
 
-
+# Decorator para verificar se o usuário é admin
 def admin_required(view_func):
     return user_passes_test(lambda user: user.is_staff, login_url='login')(view_func)
 
 #Listagem de categorias
 def index(request):
     categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
-    paginator = Paginator(categorias, 3)  # 3 categorias por página
+    paginator = Paginator(categorias, 3)
     page_number = request.GET.get('page')
     categorias = paginator.get_page(page_number)
     resumo_financeiro = ResumoFinanceiro.get_solo()
@@ -35,15 +35,36 @@ def index(request):
     return render(request, 'html/index.html', context)
 
 #Listagem de mercadorias
-def mercadorias(request):
-    mercadorias = Mercadoria.objects.all()
+def mercadorias(request, categoria_id=None):
+    if categoria_id:
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        mercadorias = Mercadoria.objects.filter(categoria_id=categoria)
+    else:
+        categoria = None
+        mercadorias = Mercadoria.objects.all()
     paginator = Paginator(mercadorias, 3)
     page_number = request.GET.get('page')
     mercadorias = paginator.get_page(page_number)
     context={
-        'mercadorias': mercadorias
+        'mercadorias': mercadorias,
+        'categoria': categoria,
     }
     return render(request, 'html/mercadorias.html', context)
+
+
+#Listagem de produtos por mercadoria
+def produtos_por_mercadoria(request, mercadoria_id):
+    mercadoria = get_object_or_404(Mercadoria, id=mercadoria_id)
+    produtos = Produto.objects.filter(mercadoria_id=mercadoria)
+    paginator = Paginator(produtos, 3)
+    page_number = request.GET.get('page')
+    produtos = paginator.get_page(page_number)
+    context = {
+        'produtos': produtos,
+        'mercadoria': mercadoria,
+    }
+    return render(request, 'html/produtos.html', context)
+
 
 #Listagem de produtos
 def produtos(request):
@@ -123,10 +144,6 @@ def cadastro_usuario(request):
 
 @csrf_exempt
 def api_register(request):
-    """API endpoint (test-only) to create a user via JSON POST.
-    This view is csrf_exempt for ease of testing from Insomnia/Postman.
-    Remove csrf_exempt for production or secure it properly.
-    """
     if request.method != 'POST':
         return JsonResponse({'detail': 'Method not allowed'}, status=405)
 

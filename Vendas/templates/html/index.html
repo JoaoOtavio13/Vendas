@@ -6,18 +6,20 @@
     <section class="showcase">
         <div class="cards-row">
             {% for categoria in categorias %}
-            <article class="showcard">
-                {% if categoria.imagem %}
-                    <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
-                {% else %}
-                    <img src="https://picsum.photos/300/200?sig={{ categoria.id }}" alt="{{ categoria.nome }}">
-                {% endif %}
-                <div class="showcard-body">
-                    <h2>{{ categoria.nome }}</h2>
-                    <p>{{ categoria.descricao }}</p>
-                    <span class="card-badge">{{ categoria.total_mercadorias }} mercadorias</span>
-                </div>
-            </article>
+                <a href="{% url 'mercadorias' categoria.id %}" class="showcard-link">
+                    <article class="showcard">
+                        {% if categoria.imagem %}
+                            <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
+                        {% else %}
+                            <img src="https://picsum.photos/300/200?sig={{ categoria.id }}" alt="{{ categoria.nome }}">
+                        {% endif %}
+                        <div class="showcard-body">
+                            <h2>{{ categoria.nome }}</h2>
+                            <p>{{ categoria.descricao }}</p>
+                            <span class="card-badge">{{ categoria.total_mercadorias }} mercadorias</span>
+                        </div>
+                    </article>
+                </a>
             {% empty %}
             <article class="showcard">
                 <div class="showcard-body">
@@ -40,16 +42,6 @@
         </div>
         {% endif %}
 
-        <a class="side-next" href="/produtos/" aria-label="Próximo">
-            <i class="fa-solid fa-chevron-right"></i>
-        </a>
-
-        <div class="slider-dots" aria-hidden="true">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-        </div>
 
         {% if user.is_staff %}
         <div class="dashboard-strip">

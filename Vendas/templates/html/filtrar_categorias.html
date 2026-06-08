@@ -1,10 +1,8 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Filtrar Categorias</title>
-</head>
-<body>
+{% extends 'html/base.html' %}
+
+{% block title %}Filtrar Categorias - Atacadão do João{% endblock %}
+
+{% block content %}
     <h1>Filtrar Categorias</h1>
     <form method="get">
         {{ form.as_p }}
@@ -15,5 +13,4 @@
     {% empty %}
         <p>Nenhuma categoria encontrada.</p>
     {% endfor %}
-</body>
-</html>
+{% endblock %}
