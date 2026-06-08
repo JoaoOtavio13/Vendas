@@ -3,9 +3,19 @@
 {% block title %}Criar Mercadoria - Atacadão do João{% endblock %}
 
 {% block content %}
-    <h1>Criar Mercadoria</h1>
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Criar</button>
-    </form>
+    <section class="showcase">
+        <div class="page-title">Criar Mercadoria</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                        {{ form.as_p }}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Criar</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
 {% endblock %}

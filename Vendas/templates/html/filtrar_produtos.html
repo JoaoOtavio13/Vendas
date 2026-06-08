@@ -3,14 +3,43 @@
 {% block title %}Filtrar Produtos - Atacadão do João{% endblock %}
 
 {% block content %}
-    <h1>Filtrar Produtos</h1>
-    <form method="get">
-        {{ form.as_p }}
-        <button type="submit">Filtrar</button>
-    </form>
-    {% for p in produtos %}
-        <div>{{ p.nome }}</div>
-    {% empty %}
-        <p>Nenhum produto encontrado.</p>
-    {% endfor %}
+    <section class="showcase">
+        <div class="page-title">Filtrar Produtos</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <form method="get">
+                        {{ form.as_p }}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Filtrar</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+
+        <div class="page-title" style="margin-top: 30px;">Resultados</div>
+        <div class="cards-row">
+            {% for p in produtos %}
+                <article class="showcard">
+                    {% if p.imagem %}
+                        <img src="{{ p.imagem.url }}" alt="{{ p.nome }}">
+                    {% else %}
+                        <img src="https://picsum.photos/300/200?sig={{ p.id }}" alt="{{ p.nome }}">
+                    {% endif %}
+                    <div class="showcard-body">
+                        <h2>{{ p.nome }}</h2>
+                        <p>Mercadoria: {{ p.mercadoria_id.nome }}</p>
+                        <span class="card-badge">R$ {{ p.preco }}</span>
+                    </div>
+                </article>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhum produto encontrado</h2>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}

@@ -3,44 +3,54 @@
 {% block title %}{% if mercadoria %}{{ mercadoria.nome }} - {% endif %}Produtos - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">{% if mercadoria %}Produtos - {{ mercadoria.nome }}{% else %}Produtos{% endif %}</div>
-    <p>
+    <section class="showcase">
+        <div class="page-title">{% if mercadoria %}Produtos - {{ mercadoria.nome }}{% else %}Produtos{% endif %}</div>
         {% if user.is_staff %}
+        <p style="text-align: center; margin-bottom: 20px;">
             <a class="btn" href="/produto/criar/">Criar produto</a>
+            <a class="btn" href="/produto/filtrar/">Filtrar</a>
+        </p>
         {% endif %}
-        <a class="btn" href="/produto/filtrar/">Filtrar</a>
-    </p>
+        <div class="cards-row">
+            {% for produto in produtos %}
+                <article class="showcard">
+                    {% if produto.imagem %}
+                        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                    {% else %}
+                        <img src="https://picsum.photos/300/200?sig={{ produto.id }}" alt="{{ produto.nome }}">
+                    {% endif %}
+                    <div class="showcard-body">
+                        <h2>{{ produto.nome }}</h2>
+                        <p>Mercadoria: {{ produto.mercadoria_id.nome }}</p>
+                        <span class="card-badge">R$ {{ produto.preco }}</span>
+                    </div>
+                    {% if user.is_staff %}
+                    <div style="padding: 10px; text-align: center;">
+                        <a href="/produto/editar/{{ produto.id }}/">Editar</a> |
+                        <a href="/produto/excluir/{{ produto.id }}/">Excluir</a>
+                    </div>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhum produto encontrado</h2>
+                        <p>Não há produtos cadastrados{% if mercadoria %} para esta mercadoria{% endif %}.</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
 
-    <div class="grid">
-        {% for produto in produtos %}
-            <div class="product media-card">
-                {% if produto.imagem %}
-                    <img class="media-thumb" src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
-                {% endif %}
-                <h3>{{ produto.nome }}</h3>
-                <div class="meta">R$ {{ produto.preco }}</div>
-                <div class="meta">Mercadoria: {{ produto.mercadoria_id.nome }}</div>
-                {% if user.is_staff %}
-                <p>
-                    <a href="/produto/editar/{{ produto.id }}/">Editar</a> |
-                    <a href="/produto/excluir/{{ produto.id }}/">Excluir</a>
-                </p>
-                {% endif %}
-            </div>
-        {% empty %}
-            <div class="card">Nenhum produto encontrado.</div>
-        {% endfor %}
-    </div>
-
-    {% if produtos.has_other_pages %}
-        <div class="card">
+        {% if produtos.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
             {% if produtos.has_previous %}
-                <a href="?page={{ produtos.previous_page_number }}">Anterior</a>
+                <a class="btn" href="?page={{ produtos.previous_page_number }}">Anterior</a>
             {% endif %}
-            <span class="meta">Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}</span>
+            <span class="meta" style="margin: 0 15px;">Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}</span>
             {% if produtos.has_next %}
-                <a href="?page={{ produtos.next_page_number }}">Próxima</a>
+                <a class="btn" href="?page={{ produtos.next_page_number }}">Próxima</a>
             {% endif %}
         </div>
-    {% endif %}
+        {% endif %}
+    </section>
 {% endblock %}

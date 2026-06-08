@@ -3,13 +3,21 @@
 {% block title %}Editar Venda - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">Adicionar item na Venda #{{ venda.id }}</div>
-    <div class="card">
-        <p class="meta">Cliente: {{ venda.usuario_id.nome|default:venda.usuario_id.username }}</p>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn" type="submit">Adicionar item</button>
-        </form>
-    </div>
+    <section class="showcase">
+        <div class="page-title">Adicionar item na Venda #{{ venda.id }}</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <p><strong>Cliente:</strong> {{ venda.usuario_id.nome|default:venda.usuario_id.username }}</p>
+                    <form method="post" enctype="multipart/form-data" style="margin-top: 15px;">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Adicionar item</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
 {% endblock %}

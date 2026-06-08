@@ -3,19 +3,27 @@
 {% block title %}Login - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">Login</div>
-    <div class="card">
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div>
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div>
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button class="btn" type="submit">Entrar</button>
-        </form>
-    </div>
+    <section class="showcase">
+        <div class="page-title">Login</div>
+        <div style="max-width: 400px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <p>
+                            <label for="username">Usuário</label><br>
+                            <input type="text" id="username" name="username" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                        </p>
+                        <p>
+                            <label for="password">Senha</label><br>
+                            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                        </p>
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Entrar</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
 {% endblock %}

@@ -3,24 +3,56 @@
 {% block title %}Perfil - {{ usuario.username }}{% endblock %}
 
 {% block content %}
-    <div class="page-title">Perfil de {{ usuario.nome }}</div>
-    <div class="card">
-        {% if usuario.imagem %}
-            <img class="profile-photo" src="{{ usuario.imagem.url }}" alt="{{ usuario.nome|default:usuario.username }}">
-        {% endif %}
-        <p><strong>Username:</strong> {{ usuario.username }}</p>
-        <p class="meta">Email: {{ usuario.email }}</p>
-    </div>
-
-    <h2>Compras</h2>
-    <div class="grid">
-    {% for c in compras %}
-        <div class="card">
-            <div>#{{ c.id }} - {{ c.data }}</div>
-            <div class="meta">Total: R$ {{ c.total }}</div>
+    <section class="showcase">
+        <div class="page-title">Perfil de {{ usuario.nome }}</div>
+        <div class="cards-row">
+            <article class="showcard">
+                {% if usuario.imagem %}
+                    <img src="{{ usuario.imagem.url }}" alt="{{ usuario.nome|default:usuario.username }}">
+                {% else %}
+                    <img src="https://picsum.photos/300/200?sig={{ usuario.id }}" alt="Foto do perfil">
+                {% endif %}
+                <div class="showcard-body">
+                    <h2>{{ usuario.nome }}</h2>
+                    <p><strong>Username:</strong> {{ usuario.username }}</p>
+                    <p>Email: {{ usuario.email }}</p>
+                    <span class="card-badge">Membro desde {{ usuario.date_joined|date:"d/m/Y" }}</span>
+                </div>
+            </article>
         </div>
-    {% empty %}
-        <div class="card">Sem compras.</div>
-    {% endfor %}
-    </div>
+
+        <div class="page-title" style="margin-top: 30px;">Minhas Compras</div>
+        <div class="cards-row">
+            {% for c in compras %}
+                <a href="{% url 'venda_detail' c.id %}" class="showcard-link">
+                    <article class="showcard">
+                        <div class="showcard-body">
+                            <h2>Venda #{{ c.id }}</h2>
+                            <p>{{ c.data }}</p>
+                            <span class="card-badge">Total: R$ {{ c.total }}</span>
+                        </div>
+                    </article>
+                </a>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhuma compra realizada</h2>
+                        <p>Você ainda não fez nenhuma compra conosco.</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if compras.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
+            {% if compras.has_previous %}
+                <a class="btn" href="?page={{ compras.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="meta" style="margin: 0 15px;">Página {{ compras.number }} de {{ compras.paginator.num_pages }}</span>
+            {% if compras.has_next %}
+                <a class="btn" href="?page={{ compras.next_page_number }}">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
 {% endblock %}

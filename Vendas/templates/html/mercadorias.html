@@ -3,21 +3,44 @@
 {% block title %}{% if categoria %}{{ categoria.nome }} - {% endif %}Mercadorias - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">{% if categoria %}Mercadorias - {{ categoria.nome }}{% else %}Mercadorias{% endif %}</div>
-    <div class="grid">
-        {% for m in mercadorias %}
-            <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
-                <div class="card media-card">
-                    {% if m.imagem %}
-                        <img class="media-thumb" src="{{ m.imagem.url }}" alt="{{ m.nome }}">
-                    {% endif %}
-                    <h3>{{ m.nome }}</h3>
-                    <div class="meta">Categoria: {{ m.categoria_id.nome }}</div>
-                    <div class="meta">{{ m.descricao }}</div>
-                </div>
-            </a>
-        {% empty %}
-            <div class="card">Sem mercadorias.</div>
-        {% endfor %}
-    </div>
+    <section class="showcase">
+        <div class="page-title">{% if categoria %}Mercadorias - {{ categoria.nome }}{% else %}Mercadorias{% endif %}</div>
+        <div class="cards-row">
+            {% for m in mercadorias %}
+                <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
+                    <article class="showcard">
+                        {% if m.imagem %}
+                            <img src="{{ m.imagem.url }}" alt="{{ m.nome }}">
+                        {% else %}
+                            <img src="https://picsum.photos/300/200?sig={{ m.id }}" alt="{{ m.nome }}">
+                        {% endif %}
+                        <div class="showcard-body">
+                            <h2>{{ m.nome }}</h2>
+                            <p>{{ m.descricao }}</p>
+                            <span class="card-badge">{{ m.categoria_id.nome }}</span>
+                        </div>
+                    </article>
+                </a>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhuma mercadoria encontrada</h2>
+                        <p>Não há mercadorias cadastradas nesta categoria.</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if mercadorias.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
+            {% if mercadorias.has_previous %}
+                <a class="btn" href="?page={{ mercadorias.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="meta" style="margin: 0 15px;">Página {{ mercadorias.number }} de {{ mercadorias.paginator.num_pages }}</span>
+            {% if mercadorias.has_next %}
+                <a class="btn" href="?page={{ mercadorias.next_page_number }}">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
 {% endblock %}

@@ -3,9 +3,19 @@
 {% block title %}Excluir Categoria - Atacadão do João{% endblock %}
 
 {% block content %}
-    <h1>Excluir Categoria</h1>
-    <p>Tem certeza que deseja excluir a categoria "{{ categoria.nome }}"?</p>
-    <form method="post">{% csrf_token %}
-        <button type="submit">Confirmar</button>
-    </form>
+    <section class="showcase">
+        <div class="page-title">Excluir Categoria</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <p>Tem certeza que deseja excluir a categoria "{{ categoria.nome }}"?</p>
+                    <form method="post">{% csrf_token %}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Confirmar</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
 {% endblock %}

@@ -3,28 +3,44 @@
 {% block title %}Venda #{{ venda.id }} - Atacadão do João{% endblock %}
 
 {% block content %}
-    <div class="page-title">Detalhe da Venda #{{ venda.id }}</div>
-    <div class="card">
-        <div class="meta">Data: {{ venda.data }}</div>
-        <div class="meta">Cliente: {% if venda.usuario_id %}{{ venda.usuario_id.username }} - {{ venda.usuario_id.nome }}{% else %}--{% endif %}</div>
-    </div>
-
-    <div class="card">
-        <h3>Itens</h3>
-        <div>
-            {% for item in venda.itens.all %}
-                <div class="product">
-                    <h3>{{ item.produto_id.nome }}</h3>
-                    <div class="meta">Qtd: {{ item.quantidade }} — R$ {{ item.produto_id.preco }}</div>
-                    <div class="meta">Subtotal: R$ {{ item.subtotal }}</div>
+    <section class="showcase">
+        <div class="page-title">Detalhe da Venda #{{ venda.id }}</div>
+        <div class="cards-row">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <h2>Venda #{{ venda.id }}</h2>
+                    <p><strong>Data:</strong> {{ venda.data }}</p>
+                    <p><strong>Cliente:</strong> {% if venda.usuario_id %}{{ venda.usuario_id.username }} - {{ venda.usuario_id.nome }}{% else %}--{% endif %}</p>
                 </div>
+            </article>
+        </div>
+
+        <div class="page-title" style="margin-top: 30px;">Itens da Venda</div>
+        <div class="cards-row">
+            {% for item in venda.itens.all %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>{{ item.produto_id.nome }}</h2>
+                        <p>Qtd: {{ item.quantidade }} — R$ {{ item.produto_id.preco }}</p>
+                        <span class="card-badge">Subtotal: R$ {{ item.subtotal }}</span>
+                    </div>
+                </article>
             {% empty %}
-                <div class="card">Nenhum item nesta venda.</div>
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhum item nesta venda</h2>
+                    </div>
+                </article>
             {% endfor %}
         </div>
-    </div>
 
-    <div class="card"><strong>Total:</strong> R$ {{ venda.total }}</div>
-
-    <p><a class="btn" href="/produtos/">Voltar à lista de produtos</a></p>
+        <div style="text-align: center; margin-top: 20px;">
+            <article class="showcard" style="max-width: 300px; margin: 0 auto;">
+                <div class="showcard-body">
+                    <h2>Total: R$ {{ venda.total }}</h2>
+                    <p style="margin-top: 10px;"><a class="btn" href="/produtos/">Voltar à lista de produtos</a></p>
+                </div>
+            </article>
+        </div>
+    </section>
 {% endblock %}

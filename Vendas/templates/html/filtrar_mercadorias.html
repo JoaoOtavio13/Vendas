@@ -3,14 +3,40 @@
 {% block title %}Filtrar Mercadorias - Atacadão do João{% endblock %}
 
 {% block content %}
-    <h1>Filtrar Mercadorias</h1>
-    <form method="get">
-        {{ form.as_p }}
-        <button type="submit">Filtrar</button>
-    </form>
-    {% for m in mercadorias %}
-        <div>{{ m.nome }}</div>
-    {% empty %}
-        <p>Nenhuma mercadoria encontrada.</p>
-    {% endfor %}
+    <section class="showcase">
+        <div class="page-title">Filtrar Mercadorias</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <form method="get">
+                        {{ form.as_p }}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Filtrar</button>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+
+        <div class="page-title" style="margin-top: 30px;">Resultados</div>
+        <div class="cards-row">
+            {% for m in mercadorias %}
+                <a href="{% url 'produtos_por_mercadoria' m.id %}" class="showcard-link">
+                    <article class="showcard">
+                        <div class="showcard-body">
+                            <h2>{{ m.nome }}</h2>
+                            <p>{{ m.descricao }}</p>
+                            <span class="card-badge">{{ m.categoria_id.nome }}</span>
+                        </div>
+                    </article>
+                </a>
+            {% empty %}
+                <article class="showcard">
+                    <div class="showcard-body">
+                        <h2>Nenhuma mercadoria encontrada</h2>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}
