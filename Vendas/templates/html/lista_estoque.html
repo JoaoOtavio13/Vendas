@@ -1,0 +1,74 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Estoque - Atacadão do João{% endblock %}
+
+{% block content %}
+    <section class="showcase">
+        <div class="page-title">Estoque de Produtos</div>
+
+        <div style="margin-bottom: 20px; text-align: right;">
+            <a href="{% url 'criar_estoque' %}" class="btn"><i class="fa-solid fa-plus"></i> Novo Estoque</a>
+        </div>
+
+        <div class="table-wrap">
+            <table class="vendas-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Mercadoria</th>
+                        <th>Quantidade</th>
+                        <th>Mínimo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estoque in estoques %}
+                        <tr>
+                            <td><strong>{{ estoque.produto_id.nome }}</strong></td>
+                            <td>{{ estoque.produto_id.mercadoria_id.nome }}</td>
+                            <td>{{ estoque.quantidade }}</td>
+                            <td>{{ estoque.minimo_quantidade }}</td>
+                            <td>
+                                {% if estoque.quantidade == 0 %}
+                                    <span class="card-badge" style="background: rgba(220,53,69,0.1); color: #dc3545; border-color: rgba(220,53,69,0.2);">Sem estoque</span>
+                                {% elif estoque.quantidade <= estoque.minimo_quantidade %}
+                                    <span class="card-badge" style="background: rgba(255,193,7,0.1); color: #e67e22; border-color: rgba(255,193,7,0.2);">Estoque baixo</span>
+                                {% else %}
+                                    <span class="card-badge" style="background: rgba(40,167,69,0.1); color: #28a745; border-color: rgba(40,167,69,0.2);">Disponível</span>
+                                {% endif %}
+                            </td>
+                            <td class="actions-cell">
+                                <a href="{% url 'editar_estoque' estoque.id %}" class="btn btn-sm" title="Editar">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--muted);">
+                                <i class="fa-solid fa-boxes-stacked" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                                Nenhum registro de estoque encontrado
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if estoques.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 24px 0;">
+            {% if estoques.has_previous %}
+                <a class="btn" href="?page={{ estoques.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="meta" style="margin: 0 15px;">
+                Página {{ estoques.number }} de {{ estoques.paginator.num_pages }}
+                <span class="muted">({{ estoques.paginator.count }} registros)</span>
+            </span>
+            {% if estoques.has_next %}
+                <a class="btn" href="?page={{ estoques.next_page_number }}">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+{% endblock %}

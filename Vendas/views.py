@@ -11,6 +11,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
+from django.core.exceptions import ValidationError
 import json
 from django.db import transaction
 # Create your views here.
@@ -118,9 +119,17 @@ def editar_venda(request, pk):
             item = form.save(commit=False)
             if item.venda_id_id != venda.id:
                 item.venda_id = venda
-            item.save()
-            messages.success(request, 'Item adicionado à venda com sucesso!')
-            return redirect('venda_detail', pk=venda.pk)
+            try:
+                item.save()
+                messages.success(request, 'Item adicionado à venda com sucesso!')
+                return redirect('venda_detail', pk=venda.pk)
+            except ValidationError as e:
+                # Se a venda não tem nenhum item, remove a venda do banco
+                if venda.itens.count() == 0:
+                    venda.delete()
+                    messages.error(request, 'Venda cancelada — ' + (e.messages[0] if hasattr(e, 'messages') else str(e)))
+                    return redirect('criar_venda')
+                messages.error(request, e.messages[0] if hasattr(e, 'messages') else str(e))
     else:
         form = VendaProdutoForm(initial={'venda_id': venda})
 
@@ -368,13 +377,13 @@ def criar_produto(request):
 def editar_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES, instance=produto)
+        form = ProdutoEditForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
             form.save()
             messages.success(request, 'Produto editado com sucesso!')
             return redirect('produtos')
     else:
-        form = ProdutoForm(instance=produto)
+        form = ProdutoEditForm(instance=produto)
     context = {
         'form': form,
         'produto': produto
@@ -402,6 +411,86 @@ def filtrar_produtos(request):
         'produtos': produtos
     }
     return render(request, 'html/filtrar_produtos.html', context)
+
+#CRUD de Estoque (admin)
+@login_required
+@admin_required
+def lista_estoque(request):
+    estoques = Estoque.objects.select_related('produto_id__mercadoria_id').all()
+    paginator = Paginator(estoques, 10)
+    page_number = request.GET.get('page')
+    estoques = paginator.get_page(page_number)
+    return render(request, 'html/lista_estoque.html', {'estoques': estoques})
+
+
+@login_required
+@admin_required
+def criar_estoque(request):
+    if request.method == 'POST':
+        form = EstoqueForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Estoque criado com sucesso!')
+            return redirect('lista_estoque')
+    else:
+        form = EstoqueForm()
+    return render(request, 'html/criar_estoque.html', {'form': form})
+
+
+@login_required
+@admin_required
+def editar_estoque(request, estoque_id):
+    estoque = get_object_or_404(Estoque, id=estoque_id)
+    if request.method == 'POST':
+        form = EstoqueForm(request.POST, instance=estoque)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Estoque atualizado com sucesso!')
+            return redirect('lista_estoque')
+    else:
+        form = EstoqueForm(instance=estoque)
+    return render(request, 'html/editar_estoque.html', {'form': form, 'estoque': estoque})
+
+#Listagem de todas as vendas (admin)
+@login_required
+@admin_required
+def lista_vendas(request):
+    from datetime import datetime, date
+    
+    vendas = Venda.objects.all().order_by('-data')
+    
+    # Filtro por data (GET parameters: data_inicio e data_fim)
+    data_inicio = request.GET.get('data_inicio', '').strip()
+    data_fim = request.GET.get('data_fim', '').strip()
+    
+    try:
+        if data_inicio:
+            data_inicio_parsed = datetime.strptime(data_inicio, '%Y-%m-%d').date()
+            vendas = vendas.filter(data__gte=data_inicio_parsed)
+    except (ValueError, TypeError):
+        data_inicio = ''
+    
+    try:
+        if data_fim:
+            data_fim_parsed = datetime.strptime(data_fim, '%Y-%m-%d').date()
+            from datetime import timedelta
+            # data_fim deve incluir todo o dia, então vamos até o final do dia
+            data_fim_end = datetime.combine(data_fim_parsed, datetime.max.time())
+            vendas = vendas.filter(data__lte=data_fim_end)
+    except (ValueError, TypeError):
+        data_fim = ''
+    
+    paginator = Paginator(vendas, 10)
+    page_number = request.GET.get('page')
+    vendas_page = paginator.get_page(page_number)
+    
+    context = {
+        'vendas': vendas_page,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
+    }
+    return render(request, 'html/lista_vendas.html', context)
+
 
 #perfil do usuário
 @login_required

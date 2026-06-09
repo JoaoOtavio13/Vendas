@@ -1,0 +1,80 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Vendas - Atacadão do João{% endblock %}
+
+{% block content %}
+    <section class="showcase">
+        <div class="page-title">Todas as Vendas</div>
+
+        <!-- Filtro por data -->
+        <form method="GET" class="filter-form" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+            <div class="filter-group">
+                <label for="data_inicio" class="filter-label">Data início</label>
+                <input type="date" id="data_inicio" name="data_inicio" value="{{ data_inicio }}" class="form-control" style="width: auto;">
+            </div>
+            <div class="filter-group">
+                <label for="data_fim" class="filter-label">Data fim</label>
+                <input type="date" id="data_fim" name="data_fim" value="{{ data_fim }}" class="form-control" style="width: auto;">
+            </div>
+            <button type="submit" class="btn">Filtrar</button>
+            {% if data_inicio or data_fim %}
+                <a href="{% url 'lista_vendas' %}" class="btn" style="background: #636e72;">Limpar</a>
+            {% endif %}
+        </form>
+
+        <!-- Tabela de vendas -->
+        <div class="table-wrap">
+            <table class="vendas-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Itens</th>
+                        <th>Total</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venda in vendas %}
+                        <tr>
+                            <td><strong>{{ venda.id }}</strong></td>
+                            <td>{{ venda.usuario_id.nome|default:venda.usuario_id.username }}</td>
+                            <td>{{ venda.data|date:"d/m/Y H:i" }}</td>
+                            <td>{{ venda.itens.count }}</td>
+                            <td><strong>R$ {{ venda.total|floatformat:2 }}</strong></td>
+                            <td class="actions-cell">
+                                <a href="{% url 'venda_detail' venda.id %}" class="btn btn-sm" title="Ver detalhes">
+                                    <i class="fa-regular fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--muted);">
+                                <i class="fa-solid fa-receipt" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                                Nenhuma venda encontrada
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        {% if vendas.has_other_pages %}
+        <div class="pagination-controls" style="text-align: center; margin: 24px 0;">
+            {% if vendas.has_previous %}
+                <a class="btn" href="?page={{ vendas.previous_page_number }}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}">Anterior</a>
+            {% endif %}
+            <span class="meta" style="margin: 0 15px;">
+                Página {{ vendas.number }} de {{ vendas.paginator.num_pages }}
+                <span class="muted">({{ vendas.paginator.count }} vendas)</span>
+            </span>
+            {% if vendas.has_next %}
+                <a class="btn" href="?page={{ vendas.next_page_number }}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+{% endblock %}

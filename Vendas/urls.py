@@ -30,7 +30,11 @@ urlpatterns = [
     path('produto/filtrar/', filtrar_produtos, name='filtrar_produtos'),
     path('perfil/', perfil, name='perfil'),
     path('venda/<int:pk>/', VendaDetailView.as_view(), name='venda_detail'),
+    path('vendas/', lista_vendas, name='lista_vendas'),
     path('venda/criar/', criar_venda, name='criar_venda'),
     path('venda/<int:pk>/editar/', editar_venda, name='editar_venda'),
+    path('estoque/', lista_estoque, name='lista_estoque'),
+    path('estoque/criar/', criar_estoque, name='criar_estoque'),
+    path('estoque/<int:estoque_id>/editar/', editar_estoque, name='editar_estoque'),
     path('api/register/', api_register, name='api_register'),
 ]

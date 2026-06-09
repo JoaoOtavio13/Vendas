@@ -1,0 +1,22 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Criar Estoque - Atacadão do João{% endblock %}
+
+{% block content %}
+    <section class="showcase">
+        <div class="page-title">Cadastrar Estoque</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <article class="showcard">
+                <div class="showcard-body">
+                    <form method="post">{% csrf_token %}
+                        {{ form.as_p }}
+                        <p style="text-align: center; margin-top: 20px;">
+                            <button class="btn" type="submit">Salvar</button>
+                            <a href="{% url 'lista_estoque' %}" class="btn" style="background: #636e72;">Cancelar</a>
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
+{% endblock %}

@@ -181,6 +181,12 @@ class VendaForm(forms.ModelForm):
             'usuario_id': forms.Select(attrs={'class': 'form-control'}),
         }
 
+    def clean_usuario_id(self):
+        usuario = self.cleaned_data.get('usuario_id')
+        if not usuario:
+            raise forms.ValidationError('Selecione um cliente para realizar a venda.')
+        return usuario
+
 
 class VendaProdutoForm(forms.ModelForm):
     class Meta:
@@ -192,6 +198,12 @@ class VendaProdutoForm(forms.ModelForm):
             'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+    def clean_produto_id(self):
+        produto = self.cleaned_data.get('produto_id')
+        if not produto:
+            raise forms.ValidationError('Selecione um produto para adicionar à venda.')
+        return produto
+
 #Filtro de compras do cliente
 class VendaFilterForm(django_filters.FilterSet):
     data = django_filters.DateFromToRangeFilter(label='Data', widget=django_filters.widgets.RangeWidget(attrs={'class': 'form-control', 'type': 'date'}))
@@ -199,3 +211,15 @@ class VendaFilterForm(django_filters.FilterSet):
     class Meta:
         model = Venda
         fields = ['data']
+
+
+#Formulário de Estoque
+class EstoqueForm(forms.ModelForm):
+    class Meta:
+        model = Estoque
+        fields = ['produto_id', 'quantidade', 'minimo_quantidade']
+        widgets = {
+            'produto_id': forms.Select(attrs={'class': 'form-control'}),
+            'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
+            'minimo_quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
