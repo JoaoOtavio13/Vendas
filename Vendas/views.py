@@ -442,13 +442,13 @@ def criar_estoque(request):
 def editar_estoque(request, estoque_id):
     estoque = get_object_or_404(Estoque, id=estoque_id)
     if request.method == 'POST':
-        form = EstoqueForm(request.POST, instance=estoque)
+        form = EstoqueEditForm(request.POST, instance=estoque)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Estoque atualizado com sucesso!')
+            messages.success(request, f'Estoque de "{estoque.produto_id.nome}" atualizado com sucesso!')
             return redirect('lista_estoque')
     else:
-        form = EstoqueForm(instance=estoque)
+        form = EstoqueEditForm(instance=estoque)
     return render(request, 'html/editar_estoque.html', {'form': form, 'estoque': estoque})
 
 #Listagem de todas as vendas (admin)
@@ -492,11 +492,132 @@ def lista_vendas(request):
     return render(request, 'html/lista_vendas.html', context)
 
 
+# ========== CARRINHO DE COMPRAS ==========
+
+@login_required
+def adicionar_carrinho(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
+    
+    # Busca um carrinho aberto para o usuário, ou cria um novo
+    carrinho, created = Venda.objects.get_or_create(
+        usuario_id=request.user,
+        status='carrinho',
+        defaults={'usuario_id': request.user}
+    )
+    
+    if request.method == 'POST':
+        quantidade = int(request.POST.get('quantidade', 1))
+        if quantidade < 1:
+            messages.error(request, 'Quantidade inválida.')
+            return redirect('produtos')
+        
+        # Verifica se o produto já está no carrinho
+        item_existente = Venda_Produto.objects.filter(
+            venda_id=carrinho,
+            produto_id=produto
+        ).first()
+        
+        if item_existente:
+            # Se já existe, aumenta a quantidade
+            item_existente.quantidade += quantidade
+            try:
+                item_existente.save()
+                messages.success(request, f'Quantidade de "{produto.nome}" atualizada no carrinho!')
+            except ValidationError as e:
+                messages.error(request, e.messages[0] if hasattr(e, 'messages') else str(e))
+                return redirect('ver_carrinho')
+        else:
+            # Cria novo item
+            item = Venda_Produto(
+                venda_id=carrinho,
+                produto_id=produto,
+                quantidade=quantidade
+            )
+            try:
+                item.save()
+                messages.success(request, f'"{produto.nome}" adicionado ao carrinho!')
+            except ValidationError as e:
+                messages.error(request, e.messages[0] if hasattr(e, 'messages') else str(e))
+                return redirect('produtos')
+        
+        return redirect('ver_carrinho')
+    
+    # GET: mostra página de confirmação do produto
+    return render(request, 'html/adicionar_carrinho.html', {
+        'produto': produto,
+        'carrinho': carrinho,
+    })
+
+
+@login_required
+def ver_carrinho(request):
+    carrinho = Venda.objects.filter(
+        usuario_id=request.user,
+        status='carrinho'
+    ).first()
+    
+    context = {
+        'carrinho': carrinho,
+    }
+    return render(request, 'html/carrinho.html', context)
+
+
+@login_required
+def editar_item_carrinho(request, item_id):
+    item = get_object_or_404(Venda_Produto, id=item_id, venda_id__usuario_id=request.user)
+    
+    if request.method == 'POST':
+        nova_quantidade = int(request.POST.get('quantidade', 1))
+        if nova_quantidade < 1:
+            messages.error(request, 'A quantidade mínima é 1.')
+            return redirect('ver_carrinho')
+        
+        item.quantidade = nova_quantidade
+        try:
+            item.save()
+            messages.success(request, f'Quantidade de "{item.produto_id.nome}" atualizada!')
+        except ValidationError as e:
+            messages.error(request, e.messages[0] if hasattr(e, 'messages') else str(e))
+        
+        return redirect('ver_carrinho')
+    
+    return redirect('ver_carrinho')
+
+
+@login_required
+def remover_item_carrinho(request, item_id):
+    item = get_object_or_404(Venda_Produto, id=item_id, venda_id__usuario_id=request.user)
+    
+    if request.method == 'POST':
+        item.delete()
+        messages.success(request, f'"{item.produto_id.nome}" removido do carrinho!')
+        return redirect('ver_carrinho')
+    
+    return render(request, 'html/remover_item.html', {'item': item})
+
+
+@login_required
+def finalizar_compra(request):
+    carrinho = get_object_or_404(Venda, usuario_id=request.user, status='carrinho')
+    
+    if carrinho.itens.count() == 0:
+        messages.error(request, 'Seu carrinho está vazio!')
+        return redirect('ver_carrinho')
+    
+    if request.method == 'POST':
+        carrinho.status = 'finalizada'
+        carrinho.save()
+        messages.success(request, f'Compra #{carrinho.id} finalizada com sucesso!')
+        return redirect('perfil')
+    
+    return render(request, 'html/finalizar_compra.html', {'carrinho': carrinho})
+
+
 #perfil do usuário
 @login_required
 def perfil(request):
     usuario = Usuario.objects.get(id=request.user.id)
-    compras = Venda.objects.filter(usuario_id=request.user).order_by('-data')
+    compras = Venda.objects.filter(usuario_id=request.user, status='finalizada').order_by('-data')
     compras_filter = VendaFilterForm(request.GET, queryset=compras)
     paginator = Paginator(compras, 5)
     page = request.GET.get('page')
@@ -507,5 +628,5 @@ def perfil(request):
         'compras_filter': compras_filter,
         'compras': compras
     }
-    return render(request, 'html/perfil.html', context) 
+    return render(request, 'html/perfil.html', context)
 

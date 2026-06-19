@@ -223,3 +223,12 @@ class EstoqueForm(forms.ModelForm):
             'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
             'minimo_quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+class EstoqueEditForm(forms.ModelForm):
+    class Meta:
+        model = Estoque
+        fields = ['quantidade', 'minimo_quantidade']
+        widgets = {
+            'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
+            'minimo_quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
