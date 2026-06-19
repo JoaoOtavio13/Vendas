@@ -17,9 +17,7 @@
             <div class="topbar-icons" aria-label="Atalhos">
                 {% if user.is_authenticated %}
                     <a href="/perfil/" title="Perfil"><i class="fa-regular fa-user"></i></a>
-                    {% if user.is_staff %}
-                        <a href="/produtos/" title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></a>
-                    {% endif %}
+                    <a href="/carrinho/" title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></a>
                     <a href="/logout/" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                 {% else %}
                     <a href="/login/" title="Entrar"><i class="fa-regular fa-user"></i></a>
