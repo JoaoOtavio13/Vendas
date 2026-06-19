@@ -1,0 +1,23 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Remover Item - Atacadão do João{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Remover do Carrinho</div>
+    <div class="card" style="max-width: 450px; margin: 0 auto; text-align: center;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: #e74c3c; margin-bottom: 16px;"></i>
+        <h2 style="margin: 0 0 8px;">Remover Item</h2>
+        <p style="color: var(--muted); margin: 0 0 24px;">
+            Tem certeza que deseja remover <strong>{{ item.produto_id.nome }}</strong> ({{ item.quantidade }} unidade{{ item.quantidade|pluralize:"m" }}) do carrinho?
+        </p>
+        <form method="POST" action="/carrinho/remover/{{ item.id }}/" style="display: flex; gap: 12px; justify-content: center;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="background: #e74c3c;">
+                <i class="fa-solid fa-trash-can"></i> Sim, Remover
+            </button>
+            <a href="/carrinho/" class="btn" style="background: var(--muted);">Cancelar</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Adicionar ao Carrinho - Atacadão do João{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Adicionar ao Carrinho</div>
+    <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+        {% if produto.imagem %}
+            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;">
+        {% else %}
+            <img src="https://picsum.photos/400/250?sig={{ produto.id }}" alt="{{ produto.nome }}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;">
+        {% endif %}
+        <h2 style="margin: 0 0 8px;">{{ produto.nome }}</h2>
+        <p style="color: var(--muted); margin: 0 0 4px;">Mercadoria: {{ produto.mercadoria_id.nome }}</p>
+        <span class="card-badge" style="font-size: 1.1rem; padding: 8px 20px; margin-bottom: 20px;">R$ {{ produto.preco }}</span>
+
+        <form method="POST" action="/carrinho/adicionar/{{ produto.id }}/" style="display: flex; flex-direction: column; gap: 16px; align-items: center;">
+            {% csrf_token %}
+            <div class="filter-group" style="width: 100%; max-width: 200px;">
+                <label class="filter-label">Quantidade:</label>
+                <input type="number" name="quantidade" value="1" min="1" class="form-control" required>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn">
+                    <i class="fa-solid fa-cart-plus"></i> Adicionar ao Carrinho
+                </button>
+                <a href="/produtos/" class="btn" style="background: var(--muted);">Continuar Comprando</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

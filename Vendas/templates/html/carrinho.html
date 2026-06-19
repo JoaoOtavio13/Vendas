@@ -1,0 +1,81 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Carrinho - Atacadão do João{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">
+        <i class="fa-solid fa-cart-shopping"></i> Meu Carrinho
+    </div>
+
+    {% if carrinho and carrinho.itens.all %}
+        <div class="table-wrap" style="margin-bottom: 24px;">
+            <table class="vendas-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço Unit.</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                        <th style="text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in carrinho.itens.all %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.produto_id.nome }}</strong>
+                            <br><span class="meta">{{ item.produto_id.mercadoria_id.nome }}</span>
+                        </td>
+                        <td>R$ {{ item.produto_id.preco }}</td>
+                        <td>
+                            <form method="POST" action="/carrinho/editar/{{ item.id }}/" style="display: flex; align-items: center; gap: 8px;">
+                                {% csrf_token %}
+                                <input type="number" name="quantidade" value="{{ item.quantidade }}" min="1" class="form-control" style="width: 70px; text-align: center;">
+                                <button type="submit" class="btn btn-sm" style="background: var(--muted);" title="Atualizar">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td><strong>R$ {{ item.subtotal|floatformat:2 }}</strong></td>
+                        <td class="actions-cell">
+                            <form method="POST" action="/carrinho/remover/{{ item.id }}/" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm" style="background: #e74c3c;" onclick="return confirm('Remover {{ item.produto_id.nome }} do carrinho?')">
+                                    <i class="fa-solid fa-trash-can"></i> Remover
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="background: rgba(224, 122, 95, 0.08); font-size: 1.1rem;">
+                        <td colspan="3" style="text-align: right; font-weight: 700;">Total:</td>
+                        <td><strong style="color: var(--accent);">R$ {{ carrinho.total|floatformat:2 }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <a href="/produtos/" class="btn" style="background: var(--muted);">
+                <i class="fa-solid fa-arrow-left"></i> Continuar Comprando
+            </a>
+            <a href="/carrinho/finalizar/" class="btn" style="font-size: 1rem; padding: 12px 32px;">
+                <i class="fa-solid fa-check"></i> Finalizar Compra
+            </a>
+        </div>
+    {% else %}
+        <div class="card" style="text-align: center; padding: 60px 20px;">
+            <i class="fa-solid fa-cart-shopping" style="font-size: 4rem; color: var(--muted); margin-bottom: 20px;"></i>
+            <h2 style="margin: 0 0 8px;">Seu carrinho está vazio</h2>
+            <p style="color: var(--muted); margin: 0 0 24px;">Navegue pelos nossos produtos e adicione itens ao carrinho!</p>
+            <a href="/produtos/" class="btn">
+                <i class="fa-solid fa-store"></i> Ver Produtos
+            </a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

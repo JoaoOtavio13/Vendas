@@ -1,0 +1,42 @@
+{% extends 'html/base.html' %}
+
+{% block title %}Finalizar Compra - Atacadão do João{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">
+        <i class="fa-solid fa-check-circle"></i> Finalizar Compra
+    </div>
+
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h2 style="margin: 0 0 16px;">Resumo da Compra</h2>
+        
+        <div style="border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px;">
+            {% for item in carrinho.itens.all %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                <div>
+                    <strong>{{ item.produto_id.nome }}</strong>
+                    <br><span class="meta">{{ item.quantidade }}x R$ {{ item.produto_id.preco }}</span>
+                </div>
+                <strong>R$ {{ item.subtotal|floatformat:2 }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; margin-bottom: 24px;">
+            <strong>Total:</strong>
+            <strong style="color: var(--accent);">R$ {{ carrinho.total|floatformat:2 }}</strong>
+        </div>
+
+        <form method="POST" action="/carrinho/finalizar/" style="display: flex; gap: 12px; justify-content: center;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="font-size: 1rem; padding: 14px 36px;">
+                <i class="fa-solid fa-check"></i> Confirmar e Finalizar
+            </button>
+            <a href="/carrinho/" class="btn" style="background: var(--muted);">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Carrinho
+            </a>
+        </form>
+    </div>
+</section>
+{% endblock %}
