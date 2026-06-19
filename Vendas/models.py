@@ -78,9 +78,14 @@ class ResumoFinanceiro(models.Model):
     
     
 class Venda(models.Model):
+    STATUS_CHOICES = [
+        ('carrinho', 'Carrinho'),
+        ('finalizada', 'Finalizada'),
+    ]
     # Campo historicamente chamado 'cliente_id' no DB; mapear para a coluna existente
     usuario_id = models.ForeignKey(Usuario, on_delete = models.CASCADE, db_column='cliente_id_id')
     data = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='carrinho')
 
     def total(self):
         return sum(item.subtotal() for item in self.itens.all())
