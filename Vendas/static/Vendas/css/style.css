@@ -272,6 +272,27 @@ select.form-control {
     flex: 1;
 }
 
+.stock-info {
+    margin: 8px 0 0;
+    font-size: 0.85rem;
+}
+
+.stock-badge {
+    font-weight: 600;
+}
+
+.stock-empty {
+    color: #dc3545;
+}
+
+.stock-low {
+    color: #e67e22;
+}
+
+.stock-ok {
+    color: #28a745;
+}
+
 .showcard-link {
     display: block;
     text-decoration: none !important;
