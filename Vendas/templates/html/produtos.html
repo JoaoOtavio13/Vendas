@@ -23,11 +23,37 @@
                         <h2>{{ produto.nome }}</h2>
                         <p>Mercadoria: {{ produto.mercadoria_id.nome }}</p>
                         <span class="card-badge">R$ {{ produto.preco }}</span>
+                        {% if user.is_staff %}
+                            {% with produto.estoque_set.first as estq %}
+                            <p class="stock-info">
+                                <strong>Estoque:</strong>
+                                {% if estq %}
+                                    {% if estq.quantidade == 0 %}
+                                    <span class="stock-badge stock-empty">{{ estq.quantidade }} un.</span>
+                                    {% elif estq.quantidade <= estq.minimo_quantidade %}
+                                    <span class="stock-badge stock-low">{{ estq.quantidade }} un.</span>
+                                    {% else %}
+                                    <span class="stock-badge stock-ok">{{ estq.quantidade }} un.</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="stock-badge stock-empty">Sem registro</span>
+                                {% endif %}
+                            </p>
+                            {% endwith %}
+                        {% endif %}
                     </div>
+                    {% if user.is_authenticated %}
+                    <div style="padding: 4px 10px 10px; text-align: center;">
+                        <a class="btn" href="/carrinho/adicionar/{{ produto.id }}/" style="font-size: 0.85rem; padding: 8px 16px;">
+                            <i class="fa-solid fa-cart-plus"></i> Comprar
+                        </a>
+                    </div>
+                    {% endif %}
                     {% if user.is_staff %}
-                    <div style="padding: 10px; text-align: center;">
-                        <a href="/produto/editar/{{ produto.id }}/">Editar</a> |
-                        <a href="/produto/excluir/{{ produto.id }}/">Excluir</a>
+                    <div style="padding: 0 10px 10px; text-align: center; font-size: 0.85rem; display: flex; justify-content: center; gap: 12px;">
+                        <a href="/produto/editar/{{ produto.id }}/"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                        <a href="/produto/excluir/{{ produto.id }}/"><i class="fa-solid fa-trash-can"></i> Excluir</a>
+                        <a href="/estoque/" title="Gerenciar Estoque"><i class="fa-solid fa-boxes-stacked"></i> Estoque</a>
                     </div>
                     {% endif %}
                 </article>
