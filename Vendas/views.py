@@ -57,12 +57,16 @@ def mercadorias(request, categoria_id=None):
 def produtos_por_mercadoria(request, mercadoria_id):
     mercadoria = get_object_or_404(Mercadoria, id=mercadoria_id)
     produtos = Produto.objects.filter(mercadoria_id=mercadoria)
-    paginator = Paginator(produtos, 3)
+    nome = request.GET.get('nome')
+    if nome:
+        produtos = produtos.filter(nome__icontains=nome)
+    paginator = Paginator(produtos, 12)
     page_number = request.GET.get('page')
     produtos = paginator.get_page(page_number)
     context = {
         'produtos': produtos,
         'mercadoria': mercadoria,
+        'nome': nome,
     }
     return render(request, 'html/produtos.html', context)
 
@@ -70,11 +74,16 @@ def produtos_por_mercadoria(request, mercadoria_id):
 #Listagem de produtos
 def produtos(request):
     produtos = Produto.objects.all()
+    nome = request.GET.get('nome')
+    if nome:
+        produtos = produtos.filter(nome__icontains=nome)
     paginator = Paginator(produtos, 3)
     page_number = request.GET.get('page')
     produtos = paginator.get_page(page_number)
-    context={
-        'produtos': produtos
+
+    context = {
+        'produtos': produtos,
+        'nome': nome,
     }
     return render(request, 'html/produtos.html', context)
 
@@ -86,17 +95,18 @@ class ProdutoListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        form = ProdutoFilterForm(self.request.GET, queryset=qs)
-        if form.is_valid():
-            return form.qs
-        return qs
+        produtos = Produto.objects.all()
+
+        nome = self.request.GET.get('nome')
+
+        if nome:
+            produtos = produtos.filter(nome__icontains=nome)
+
+        return produtos
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = super().get_queryset()
-        context['filter_form'] = ProdutoFilterForm(self.request.GET, queryset=qs)
-        context['filter_active'] = any(self.request.GET.get(f) for f in ['nome', 'mercadoria_id', 'preco_min', 'preco_max'])
+        context['nome'] = self.request.GET.get('nome', '')
         return context
 
 
@@ -418,12 +428,14 @@ def excluir_produto(request, produto_id):
     return render(request, 'html/excluir_produto.html', context)
 
 def filtrar_produtos(request):
-    form = ProdutoFilterForm(request.GET)
-    produtos = form.qs
+    filtro = ProdutoFilterForm(request.GET, queryset=Produto.objects.all())
+
     context = {
-        'form': form,
-        'produtos': produtos
+        'filter_form': filtro.form,
+        'produtos': filtro.qs,
+        'filter_active': bool(request.GET)
     }
+    
     return render(request, 'html/filtrar_produtos.html', context)
 
 #CRUD de Estoque (admin)
