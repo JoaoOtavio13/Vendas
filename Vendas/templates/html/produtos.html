@@ -13,29 +13,24 @@
         <!-- Filtro de Produtos -->
         <div class="card" style="margin-bottom: 28px;">
             <form method="get" style="padding: 20px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: end;">
-                    <div class="filter-group">
-                        <label class="filter-label">{{ filter_form.nome.label }}</label>
-                        {{ filter_form.nome }}
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">{{ filter_form.mercadoria_id.label }}</label>
-                        {{ filter_form.mercadoria_id }}
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">{{ filter_form.preco_min.label }}</label>
-                        {{ filter_form.preco_min }}
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">{{ filter_form.preco_max.label }}</label>
-                        {{ filter_form.preco_max }}
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: end; padding-bottom: 2px;">
-                        <button class="btn" type="submit" style="padding: 10px 16px;"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        {% if filter_active %}
-                        <a href="{% url 'produtos' %}" class="btn" style="background: var(--muted); padding: 10px 16px;"><i class="fa-solid fa-eraser"></i></a>
-                        {% endif %}
-                    </div>
+                <div style="display: flex; gap: 10px;">
+                    <input
+                        type="text"
+                        name="nome"
+                        value="{{ nome|default:'' }}"
+                        placeholder="Buscar produto..."
+                        class="form-control"
+                    >
+
+                    <button class="btn" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    {% if nome %}
+                    <a href="/produtos/" class="btn">
+                        <i class="fa-solid fa-eraser"></i>
+                    </a>
+                    {% endif %}
                 </div>
             </form>
         </div>
@@ -98,11 +93,11 @@
         {% if produtos.has_other_pages %}
         <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
             {% if produtos.has_previous %}
-                <a class="btn" href="?page={{ produtos.previous_page_number }}{% if filter_form.data.nome %}&nome={{ filter_form.data.nome }}{% endif %}{% if filter_form.data.mercadoria_id %}&mercadoria_id={{ filter_form.data.mercadoria_id }}{% endif %}{% if filter_form.data.preco_min %}&preco_min={{ filter_form.data.preco_min }}{% endif %}{% if filter_form.data.preco_max %}&preco_max={{ filter_form.data.preco_max }}{% endif %}">Anterior</a>
+                <a class="btn" href="?page={{ produtos.previous_page_number }}{% if nome %}&nome={{ nome }}{% endif %}">Anterior</a>
             {% endif %}
             <span class="meta" style="margin: 0 15px;">Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}</span>
             {% if produtos.has_next %}
-                <a class="btn" href="?page={{ produtos.next_page_number }}{% if filter_form.data.nome %}&nome={{ filter_form.data.nome }}{% endif %}{% if filter_form.data.mercadoria_id %}&mercadoria_id={{ filter_form.data.mercadoria_id }}{% endif %}{% if filter_form.data.preco_min %}&preco_min={{ filter_form.data.preco_min }}{% endif %}{% if filter_form.data.preco_max %}&preco_max={{ filter_form.data.preco_max }}{% endif %}">Próxima</a>
+                <a class="btn" href="?page={{ produtos.next_page_number }}{% if nome %}&nome={{ nome }}{% endif %}">Próxima</a>
             {% endif %}
         </div>
         {% endif %}
