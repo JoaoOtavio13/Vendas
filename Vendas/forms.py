@@ -164,13 +164,24 @@ class ProdutoEditForm(forms.ModelForm):
             'preco': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-#Filtro para pesquisar produtos por nome
+#Filtro para pesquisar produtos
 class ProdutoFilterForm(django_filters.FilterSet):
-    nome = django_filters.CharFilter(lookup_expr='icontains', label='Nome', widget=forms.TextInput(attrs={'placeholder': 'Pesquisar por nome', 'class': 'form-control'}), required=False)
+    nome = django_filters.CharFilter(lookup_expr='icontains', label='Nome', widget=forms.TextInput(attrs={'placeholder': 'Buscar por nome...', 'class': 'form-control'}), required=False)
+    mercadoria_id = django_filters.ModelChoiceFilter(
+        queryset=Mercadoria.objects.all(),
+        label='Mercadoria',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False,
+        empty_label='Todas as mercadorias'
+    )
+    preco_min = django_filters.NumberFilter(field_name='preco', lookup_expr='gte', label='Preço mín.',
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'R$ 0,00'}), required=False)
+    preco_max = django_filters.NumberFilter(field_name='preco', lookup_expr='lte', label='Preço máx.',
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'R$ 999,99'}), required=False)
 
     class Meta:
         model = Produto
-        fields = ['nome']
+        fields = ['nome', 'mercadoria_id', 'preco']
 
 
 class VendaForm(forms.ModelForm):

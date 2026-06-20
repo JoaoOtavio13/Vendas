@@ -83,7 +83,21 @@ class ProdutoListView(ListView):
     model = Produto
     template_name = 'html/produtos.html'
     context_object_name = 'produtos'
-    paginate_by = 3
+    paginate_by = 12
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        form = ProdutoFilterForm(self.request.GET, queryset=qs)
+        if form.is_valid():
+            return form.qs
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = super().get_queryset()
+        context['filter_form'] = ProdutoFilterForm(self.request.GET, queryset=qs)
+        context['filter_active'] = any(self.request.GET.get(f) for f in ['nome', 'mercadoria_id', 'preco_min', 'preco_max'])
+        return context
 
 
 class VendaDetailView(DetailView):
