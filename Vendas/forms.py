@@ -61,6 +61,10 @@ class UsuarioEditForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['imagem'].widget.attrs.update({'class': 'form-control'})
 
+    class Meta:
+        model = Usuario
+        fields = ['username', 'nome', 'idade', 'cpf', 'telefone', 'endereco', 'cidade', 'email', 'imagem']
+
 #Formulário para criar categoria
 class CategoriaForm(forms.ModelForm):
     imagem = forms.ImageField(required=True, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
