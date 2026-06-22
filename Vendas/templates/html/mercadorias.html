@@ -5,9 +5,35 @@
 {% block content %}
     <section class="showcase">
         <div class="page-title">{% if categoria %}Mercadorias - {{ categoria.nome }}{% else %}Mercadorias{% endif %}</div>
+        {% if user.is_staff %}
         <p style="text-align: center; margin-bottom: 20px;">
             <a class="btn" href="/mercadoria/filtrar/">Filtrar</a>
         </p>
+        {% endif %}
+        <!-- Filtro de Mercadorias -->
+        <div class="card" style="margin-bottom: 28px;">
+            <form method="get" style="padding: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <input
+                        type="text"
+                        name="nome"
+                        value="{{ nome|default:'' }}"
+                        placeholder="Buscar produto..."
+                        class="form-control"
+                    >
+
+                    <button class="btn" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    {% if nome %}
+                    <a href="?nome=" class="btn">
+                        <i class="fa-solid fa-eraser"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
         <div class="cards-row">
             {% for m in mercadorias %}
                 <div style="margin-bottom: 20px;">
@@ -45,11 +71,11 @@
         {% if mercadorias.has_other_pages %}
         <div class="pagination-controls" style="text-align: center; margin: 20px 0;">
             {% if mercadorias.has_previous %}
-                <a class="btn" href="?page={{ mercadorias.previous_page_number }}">Anterior</a>
+                <a class="btn" href="?page={{ mercadorias.previous_page_number }}{% if nome %}&nome={{ nome }}{% endif %}">Anterior</a>
             {% endif %}
             <span class="meta" style="margin: 0 15px;">Página {{ mercadorias.number }} de {{ mercadorias.paginator.num_pages }}</span>
             {% if mercadorias.has_next %}
-                <a class="btn" href="?page={{ mercadorias.next_page_number }}">Próxima</a>
+                <a class="btn" href="?page={{ mercadorias.next_page_number }}{% if nome %}&nome={{ nome }}{% endif %}">Próxima</a>
             {% endif %}
         </div>
         {% endif %}

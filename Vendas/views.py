@@ -23,6 +23,9 @@ def admin_required(view_func):
 #Listagem de categorias
 def index(request):
     categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
+    nome = request.GET.get('nome')
+    if nome:
+        categorias = categorias.filter(nome__icontains=nome)
     paginator = Paginator(categorias, 3)
     page_number = request.GET.get('page')
     categorias = paginator.get_page(page_number)
@@ -32,6 +35,7 @@ def index(request):
         'resumo_financeiro': resumo_financeiro,
         'total_produtos': Produto.objects.count(),
         'total_mercadorias': Mercadoria.objects.count(),
+        'nome': nome,
     }
     return render(request, 'html/index.html', context)
 
@@ -43,12 +47,16 @@ def mercadorias(request, categoria_id=None):
     else:
         categoria = None
         mercadorias = Mercadoria.objects.all()
+    nome = request.GET.get('nome')
+    if nome:
+        mercadorias = mercadorias.filter(nome__icontains=nome)
     paginator = Paginator(mercadorias, 3)
     page_number = request.GET.get('page')
     mercadorias = paginator.get_page(page_number)
     context={
         'mercadorias': mercadorias,
         'categoria': categoria,
+        'nome': nome,
     }
     return render(request, 'html/mercadorias.html', context)
 
@@ -258,11 +266,15 @@ def excluir_usuario(request, id):
 @login_required
 def categorias(request):
     categorias = Categoria.objects.all().annotate(total_mercadorias=Count('mercadoria'))
+    nome = request.GET.get('nome')
+    if nome:
+        categorias = categorias.filter(nome__icontains=nome)
     paginator = Paginator(categorias, 3)
     page_number = request.GET.get('page')
     categorias = paginator.get_page(page_number)
     context={
-        'categorias': categorias
+        'categorias': categorias,
+        'nome': nome,
     }
     return render(request, 'html/categorias.html', context)
 
