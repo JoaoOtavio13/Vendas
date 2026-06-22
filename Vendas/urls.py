@@ -37,7 +37,6 @@ urlpatterns = [
     path('estoque/', lista_estoque, name='lista_estoque'),
     path('estoque/criar/', criar_estoque, name='criar_estoque'),
     path('estoque/<int:estoque_id>/editar/', editar_estoque, name='editar_estoque'),
-    path('api/register/', api_register, name='api_register'),
     # Carrinho de compras
     path('carrinho/adicionar/<int:produto_id>/', adicionar_carrinho, name='adicionar_carrinho'),
     path('carrinho/', ver_carrinho, name='ver_carrinho'),
