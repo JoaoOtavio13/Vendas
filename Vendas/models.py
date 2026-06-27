@@ -52,6 +52,9 @@ class Estoque(models.Model):
     quantidade = models.PositiveIntegerField(default=0)
     minimo_quantidade = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        unique_together = ('produto_id',)
+
     def __str__(self):
         return f"{self.produto_id.nome} - {self.quantidade}"        
 
