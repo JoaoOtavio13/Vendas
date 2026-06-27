@@ -6,8 +6,8 @@
     <section class="showcase">
         <div class="cards-row">
             {% for categoria in categorias %}
-                <a href="{% url 'mercadorias_categoria' categoria.id %}" class="showcard-link">
-                    <article class="showcard">
+                <article class="showcard">
+                    <a href="{% url 'mercadorias_categoria' categoria.id %}" class="showcard-link">
                         {% if categoria.imagem %}
                             <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}">
                         {% else %}
@@ -18,8 +18,14 @@
                             <p>{{ categoria.descricao }}</p>
                             <span class="card-badge">{{ categoria.total_mercadorias }} mercadorias</span>
                         </div>
-                    </article>
-                </a>
+                    </a>
+                    {% if user.is_staff %}
+                    <div style="padding: 0 10px 10px; text-align: center; font-size: 0.85rem; display: flex; justify-content: center; gap: 12px;">
+                        <a href="/categoria/editar/{{ categoria.id }}/" style="color: #d4a017;"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                        <a href="/categoria/excluir/{{ categoria.id }}/" style="color: #dc3545;"><i class="fa-solid fa-trash-can"></i> Excluir</a>
+                    </div>
+                    {% endif %}
+                </article>
             {% empty %}
             <article class="showcard">
                 <div class="showcard-body">
