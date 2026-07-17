@@ -67,5 +67,18 @@
         </div>
         <div class="footer-copy">&copy; {% now "Y" %} Atacadão do João - Todos os direitos reservados.</div>
     </footer>
+    <script>
+    function togglePassword(inputId, btn) {
+        var input = document.getElementById(inputId);
+        var icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-regular fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-regular fa-eye';
+        }
+    }
+    </script>
 </body>
 </html>

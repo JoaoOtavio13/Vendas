@@ -504,6 +504,43 @@ select.form-control {
     text-decoration: underline;
 }
 
+/* ========== PASSWORD TOGGLE (OLHINHO) ========== */
+.password-wrapper {
+    position: relative;
+    display: block;
+}
+
+.password-wrapper input {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 1.1rem;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition);
+    line-height: 1;
+}
+
+.password-toggle:hover {
+    color: var(--accent);
+}
+
+.password-toggle:focus {
+    outline: none;
+    color: var(--accent);
+}
 /* ========== BUTTONS ========== */
 .btn {
     display: inline-block;

@@ -16,7 +16,12 @@
                         </p>
                         <p>
                             <label for="password">Senha</label><br>
-                            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                            <span class="password-wrapper">
+                                <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                                <button type="button" class="password-toggle" onclick="togglePassword('password', this)" tabindex="-1" aria-label="Mostrar/ocultar senha">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </span>
                         </p>
                         <p style="text-align: center; margin-top: 20px;">
                             <button class="btn" type="submit">Entrar</button>
