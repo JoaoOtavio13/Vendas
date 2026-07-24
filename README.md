@@ -53,6 +53,9 @@ cd Vendas_ajustes
 python -m venv venv
 ```
 
+> Ambiente virtual oficial do projeto: `venv`.
+> Evite criar `.venv` neste repositório para não duplicar ambientes.
+
 ### 3. Ative o ambiente virtual
 
 **Windows:**
