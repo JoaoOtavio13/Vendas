@@ -247,3 +247,87 @@ class EstoqueEditForm(forms.ModelForm):
             'quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
             'minimo_quantidade': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+
+class LeadForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = [
+            'nome',
+            'email',
+            'telefone',
+            'empresa',
+            'cargo',
+            'valor_potencial',
+            'score',
+            'origem',
+            'status',
+            'observacoes',
+            'responsavel',
+        ]
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+            'empresa': forms.TextInput(attrs={'class': 'form-control'}),
+            'cargo': forms.TextInput(attrs={'class': 'form-control'}),
+            'valor_potencial': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'score': forms.NumberInput(attrs={'class': 'form-control'}),
+            'origem': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'observacoes': forms.Textarea(attrs={'class': 'form-control'}),
+            'responsavel': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+
+class OportunidadeForm(forms.ModelForm):
+    class Meta:
+        model = Oportunidade
+        fields = [
+            'titulo',
+            'lead',
+            'venda',
+            'valor',
+            'pipeline',
+            'etapa',
+            'responsavel',
+            'status',
+            'previsao_fechamento',
+            'motivo_perda',
+        ]
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'lead': forms.Select(attrs={'class': 'form-control'}),
+            'venda': forms.Select(attrs={'class': 'form-control'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'pipeline': forms.Select(attrs={'class': 'form-control'}),
+            'etapa': forms.Select(attrs={'class': 'form-control'}),
+            'responsavel': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'previsao_fechamento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'motivo_perda': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        pipeline_id = None
+        if self.is_bound:
+            pipeline_id = self.data.get('pipeline')
+        elif self.instance and self.instance.pk:
+            pipeline_id = self.instance.pipeline_id
+        elif self.initial.get('pipeline'):
+            pipeline_id = self.initial.get('pipeline')
+
+        if pipeline_id:
+            self.fields['etapa'].queryset = EtapaPipeline.objects.filter(pipeline_id=pipeline_id).order_by('ordem')
+        else:
+            self.fields['etapa'].queryset = EtapaPipeline.objects.select_related('pipeline').all().order_by('pipeline_id', 'ordem')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pipeline = cleaned_data.get('pipeline')
+        etapa = cleaned_data.get('etapa')
+        if pipeline and etapa and etapa.pipeline_id != pipeline.id:
+            self.add_error('etapa', 'A etapa escolhida nao pertence ao pipeline selecionado.')
+        return cleaned_data

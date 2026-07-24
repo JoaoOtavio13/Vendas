@@ -37,6 +37,13 @@ urlpatterns = [
     path('estoque/', lista_estoque, name='lista_estoque'),
     path('estoque/criar/', criar_estoque, name='criar_estoque'),
     path('estoque/<int:estoque_id>/editar/', editar_estoque, name='editar_estoque'),
+    # CRM (admin)
+    path('crm/', crm_dashboard, name='crm_dashboard'),
+    path('crm/leads/', crm_leads, name='crm_leads'),
+    path('crm/leads/criar/', crm_lead_criar, name='crm_lead_criar'),
+    path('crm/oportunidades/', crm_oportunidades, name='crm_oportunidades'),
+    path('crm/oportunidades/criar/', crm_oportunidade_criar, name='crm_oportunidade_criar'),
+    path('crm/kanban/', crm_kanban, name='crm_kanban'),
     # Carrinho de compras
     path('carrinho/adicionar/<int:produto_id>/', adicionar_carrinho, name='adicionar_carrinho'),
     path('carrinho/', ver_carrinho, name='ver_carrinho'),

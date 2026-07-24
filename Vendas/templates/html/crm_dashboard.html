@@ -1,0 +1,42 @@
+{% extends 'html/base.html' %}
+
+{% block title %}CRM - Dashboard{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">CRM Dashboard</div>
+
+    <div class="cards-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 20px;">
+        <article class="showcard">
+            <div class="showcard-body">
+                <h2>{{ leads_total }}</h2>
+                <p>Total de Leads</p>
+            </div>
+        </article>
+        <article class="showcard">
+            <div class="showcard-body">
+                <h2>{{ oportunidades_abertas }}</h2>
+                <p>Oportunidades Abertas</p>
+            </div>
+        </article>
+        <article class="showcard">
+            <div class="showcard-body">
+                <h2>{{ oportunidades_ganhas }}</h2>
+                <p>Oportunidades Ganhas</p>
+            </div>
+        </article>
+        <article class="showcard">
+            <div class="showcard-body">
+                <h2>R$ {{ valor_aberto|floatformat:2 }}</h2>
+                <p>Pipeline em Aberto</p>
+            </div>
+        </article>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a class="btn" href="{% url 'crm_leads' %}">Ver Leads</a>
+        <a class="btn" href="{% url 'crm_oportunidades' %}">Ver Oportunidades</a>
+        <a class="btn" href="{% url 'crm_kanban' %}">Abrir Kanban</a>
+    </div>
+</section>
+{% endblock %}

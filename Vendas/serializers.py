@@ -1,5 +1,20 @@
 from rest_framework import serializers
-from .models import Usuario, Categoria, Mercadoria, Produto, Estoque, ResumoFinanceiro, Venda, Venda_Produto
+from .models import (
+    Usuario,
+    Categoria,
+    Mercadoria,
+    Produto,
+    Estoque,
+    ResumoFinanceiro,
+    Venda,
+    Venda_Produto,
+    Pipeline,
+    EtapaPipeline,
+    Lead,
+    Oportunidade,
+    Atividade,
+    InteracaoCliente,
+)
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -89,3 +104,39 @@ class VendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Venda
         fields = ['id', 'usuario_id', 'usuario_nome', 'data', 'status', 'total', 'itens']
+
+
+class PipelineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pipeline
+        fields = '__all__'
+
+
+class EtapaPipelineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EtapaPipeline
+        fields = '__all__'
+
+
+class LeadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lead
+        fields = '__all__'
+
+
+class OportunidadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Oportunidade
+        fields = '__all__'
+
+
+class AtividadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Atividade
+        fields = '__all__'
+
+
+class InteracaoClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InteracaoCliente
+        fields = '__all__'

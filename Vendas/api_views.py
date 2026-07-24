@@ -5,7 +5,22 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import get_object_or_404
 
-from .models import Usuario, Categoria, Mercadoria, Produto, Estoque, ResumoFinanceiro, Venda, Venda_Produto
+from .models import (
+    Usuario,
+    Categoria,
+    Mercadoria,
+    Produto,
+    Estoque,
+    ResumoFinanceiro,
+    Venda,
+    Venda_Produto,
+    Pipeline,
+    EtapaPipeline,
+    Lead,
+    Oportunidade,
+    Atividade,
+    InteracaoCliente,
+)
 from .serializers import (
     UsuarioSerializer,
     CategoriaSerializer,
@@ -16,6 +31,12 @@ from .serializers import (
     ResumoFinanceiroSerializer,
     VendaSerializer,
     VendaProdutoSerializer,
+    PipelineSerializer,
+    EtapaPipelineSerializer,
+    LeadSerializer,
+    OportunidadeSerializer,
+    AtividadeSerializer,
+    InteracaoClienteSerializer,
 )
 
 
@@ -143,6 +164,71 @@ class VendaViewSet(viewsets.ModelViewSet):
         if user.is_staff or user.is_superuser:
             return Venda.objects.all().order_by('-data')
         return Venda.objects.filter(usuario_id=user).order_by('-data')
+
+
+# ==================== CRM (ViewSets) ====================
+
+class PipelineViewSet(viewsets.ModelViewSet):
+    queryset = Pipeline.objects.all().order_by('nome')
+    serializer_class = PipelineSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class EtapaPipelineViewSet(viewsets.ModelViewSet):
+    queryset = EtapaPipeline.objects.select_related('pipeline').all().order_by('pipeline_id', 'ordem')
+    serializer_class = EtapaPipelineSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class LeadViewSet(viewsets.ModelViewSet):
+    queryset = Lead.objects.select_related('responsavel').all().order_by('-criado_em')
+    serializer_class = LeadSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return Lead.objects.select_related('responsavel').all().order_by('-criado_em')
+        return Lead.objects.select_related('responsavel').filter(responsavel=user).order_by('-criado_em')
+
+
+class OportunidadeViewSet(viewsets.ModelViewSet):
+    queryset = Oportunidade.objects.select_related('lead', 'pipeline', 'etapa', 'responsavel').all().order_by('-criado_em')
+    serializer_class = OportunidadeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        base = Oportunidade.objects.select_related('lead', 'pipeline', 'etapa', 'responsavel')
+        if user.is_staff or user.is_superuser:
+            return base.all().order_by('-criado_em')
+        return base.filter(responsavel=user).order_by('-criado_em')
+
+
+class AtividadeViewSet(viewsets.ModelViewSet):
+    queryset = Atividade.objects.select_related('lead', 'oportunidade', 'usuario').all().order_by('-criado_em')
+    serializer_class = AtividadeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        base = Atividade.objects.select_related('lead', 'oportunidade', 'usuario')
+        if user.is_staff or user.is_superuser:
+            return base.all().order_by('-criado_em')
+        return base.filter(usuario=user).order_by('-criado_em')
+
+
+class InteracaoClienteViewSet(viewsets.ModelViewSet):
+    queryset = InteracaoCliente.objects.select_related('cliente', 'oportunidade').all().order_by('-criado_em')
+    serializer_class = InteracaoClienteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        base = InteracaoCliente.objects.select_related('cliente', 'oportunidade')
+        if user.is_staff or user.is_superuser:
+            return base.all().order_by('-criado_em')
+        return base.filter(cliente=user).order_by('-criado_em')
 
 
 # ==================== FUNCTION BASED VIEW (FBV) - Exemplo @api_view ====================

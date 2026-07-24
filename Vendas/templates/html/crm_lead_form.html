@@ -1,0 +1,23 @@
+{% extends 'html/base.html' %}
+
+{% block title %}CRM - Novo Lead{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Novo Lead</div>
+    <div style="max-width: 760px; margin: 0 auto;">
+        <article class="showcard">
+            <div class="showcard-body" style="align-items: stretch; text-align: left;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;">
+                        <button class="btn" type="submit">Salvar Lead</button>
+                        <a class="btn" href="{% url 'crm_leads' %}" style="background: #636e72;">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

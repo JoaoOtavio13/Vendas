@@ -8,6 +8,12 @@ from .api_views import (
     CategoriaViewSet,
     MercadoriaViewSet,
     VendaViewSet,
+    PipelineViewSet,
+    EtapaPipelineViewSet,
+    LeadViewSet,
+    OportunidadeViewSet,
+    AtividadeViewSet,
+    InteracaoClienteViewSet,
     ProdutoDetailComEstoqueView,
     FaturamentoView,
     EstoqueListView,
@@ -21,6 +27,12 @@ router.register(r'produtos', ProdutoViewSet, basename='api_produto')
 router.register(r'categorias', CategoriaViewSet, basename='api_categoria')
 router.register(r'mercadorias', MercadoriaViewSet, basename='api_mercadoria')
 router.register(r'vendas', VendaViewSet, basename='api_venda')
+router.register(r'crm/pipelines', PipelineViewSet, basename='api_crm_pipeline')
+router.register(r'crm/etapas', EtapaPipelineViewSet, basename='api_crm_etapa')
+router.register(r'crm/leads', LeadViewSet, basename='api_crm_lead')
+router.register(r'crm/oportunidades', OportunidadeViewSet, basename='api_crm_oportunidade')
+router.register(r'crm/atividades', AtividadeViewSet, basename='api_crm_atividade')
+router.register(r'crm/interacoes', InteracaoClienteViewSet, basename='api_crm_interacao')
 
 # ==================== URLS DA API ====================
 

@@ -1,0 +1,70 @@
+{% extends 'html/base.html' %}
+
+{% block title %}CRM - Leads{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Leads</div>
+
+    <form method="get" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+        <div class="filter-group">
+            <label class="filter-label" for="nome">Nome</label>
+            <input id="nome" type="text" name="nome" value="{{ nome }}" class="form-control" placeholder="Pesquisar lead">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="status">Status</label>
+            <select id="status" name="status" class="form-control">
+                <option value="">Todos</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn" type="submit">Filtrar</button>
+        <a class="btn" href="{% url 'crm_lead_criar' %}">Novo Lead</a>
+    </form>
+
+    <div class="table-wrap">
+        <table class="vendas-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Origem</th>
+                    <th>Status</th>
+                    <th>Responsavel</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                <tr>
+                    <td><strong>{{ lead.nome }}</strong></td>
+                    <td>{{ lead.email|default:'-' }}</td>
+                    <td>{{ lead.telefone|default:'-' }}</td>
+                    <td>{{ lead.get_origem_display }}</td>
+                    <td>{{ lead.get_status_display }}</td>
+                    <td>{{ lead.responsavel.username|default:'-' }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding: 28px;">Nenhum lead encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if leads.has_other_pages %}
+    <div style="text-align: center; margin-top: 20px;">
+        {% if leads.has_previous %}
+            <a class="btn" href="?page={{ leads.previous_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="meta" style="margin: 0 12px;">Pagina {{ leads.number }} de {{ leads.paginator.num_pages }}</span>
+        {% if leads.has_next %}
+            <a class="btn" href="?page={{ leads.next_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Proxima</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

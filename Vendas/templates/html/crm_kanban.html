@@ -1,0 +1,49 @@
+{% extends 'html/base.html' %}
+
+{% block title %}CRM - Kanban{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Kanban de Oportunidades</div>
+
+    <form method="get" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+        <div class="filter-group">
+            <label class="filter-label" for="pipeline">Pipeline</label>
+            <select id="pipeline" name="pipeline" class="form-control">
+                {% for p in pipelines %}
+                    <option value="{{ p.id }}" {% if pipeline and pipeline.id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn" type="submit">Carregar</button>
+        <a class="btn" href="{% url 'crm_oportunidade_criar' %}">Nova Oportunidade</a>
+    </form>
+
+    {% if pipeline %}
+        <div class="crm-kanban">
+            {% for col in colunas %}
+            <div class="crm-column">
+                <h3>{{ col.etapa.nome }}</h3>
+                <p class="meta">Probabilidade: {{ col.etapa.probabilidade }}%</p>
+                {% for op in col.oportunidades %}
+                    <article class="crm-ticket">
+                        <h4>{{ op.titulo }}</h4>
+                        <p class="meta">Lead: {{ op.lead.nome|default:'-' }}</p>
+                        <p><strong>R$ {{ op.valor|floatformat:2 }}</strong></p>
+                        <p class="meta">Responsavel: {{ op.responsavel.username|default:'-' }}</p>
+                    </article>
+                {% empty %}
+                    <article class="crm-ticket">
+                        <p class="meta">Sem oportunidades nesta etapa.</p>
+                    </article>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card" style="max-width: 700px; margin: 0 auto; text-align: center;">
+            <p>Nenhum pipeline ativo encontrado. Cadastre um no admin para usar o Kanban.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

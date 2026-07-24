@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
@@ -667,4 +667,136 @@ def perfil(request):
         'compras': compras
     }
     return render(request, 'html/perfil.html', context)
+
+
+@login_required
+@admin_required
+def crm_dashboard(request):
+    leads_total = Lead.objects.count()
+    oportunidades_abertas = Oportunidade.objects.filter(status='aberta').count()
+    oportunidades_ganhas = Oportunidade.objects.filter(status='ganha').count()
+    valor_aberto = Oportunidade.objects.filter(status='aberta').aggregate(total=Sum('valor')).get('total') or 0
+
+    context = {
+        'leads_total': leads_total,
+        'oportunidades_abertas': oportunidades_abertas,
+        'oportunidades_ganhas': oportunidades_ganhas,
+        'valor_aberto': valor_aberto,
+    }
+    return render(request, 'html/crm_dashboard.html', context)
+
+
+@login_required
+@admin_required
+def crm_leads(request):
+    nome = request.GET.get('nome', '').strip()
+    status = request.GET.get('status', '').strip()
+
+    leads = Lead.objects.select_related('responsavel').all().order_by('-criado_em')
+    if nome:
+        leads = leads.filter(nome__icontains=nome)
+    if status:
+        leads = leads.filter(status=status)
+
+    paginator = Paginator(leads, 10)
+    page_number = request.GET.get('page')
+    leads = paginator.get_page(page_number)
+
+    context = {
+        'leads': leads,
+        'nome': nome,
+        'status': status,
+        'status_choices': Lead.STATUS_CHOICES,
+    }
+    return render(request, 'html/crm_leads.html', context)
+
+
+@login_required
+@admin_required
+def crm_lead_criar(request):
+    if request.method == 'POST':
+        form = LeadForm(request.POST)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            if not lead.responsavel:
+                lead.responsavel = request.user
+            lead.save()
+            messages.success(request, 'Lead criado com sucesso!')
+            return redirect('crm_leads')
+    else:
+        form = LeadForm(initial={'responsavel': request.user.id})
+
+    return render(request, 'html/crm_lead_form.html', {'form': form})
+
+
+@login_required
+@admin_required
+def crm_oportunidades(request):
+    pipeline_id = request.GET.get('pipeline', '').strip()
+    status = request.GET.get('status', '').strip()
+
+    oportunidades = Oportunidade.objects.select_related('lead', 'pipeline', 'etapa', 'responsavel').all().order_by('-criado_em')
+
+    if pipeline_id:
+        oportunidades = oportunidades.filter(pipeline_id=pipeline_id)
+    if status:
+        oportunidades = oportunidades.filter(status=status)
+
+    paginator = Paginator(oportunidades, 10)
+    page_number = request.GET.get('page')
+    oportunidades = paginator.get_page(page_number)
+
+    context = {
+        'oportunidades': oportunidades,
+        'pipelines': Pipeline.objects.filter(ativo=True).order_by('nome'),
+        'pipeline_atual': pipeline_id,
+        'status_atual': status,
+        'status_choices': Oportunidade.STATUS_CHOICES,
+    }
+    return render(request, 'html/crm_oportunidades.html', context)
+
+
+@login_required
+@admin_required
+def crm_oportunidade_criar(request):
+    if request.method == 'POST':
+        form = OportunidadeForm(request.POST)
+        if form.is_valid():
+            oportunidade = form.save(commit=False)
+            if not oportunidade.responsavel:
+                oportunidade.responsavel = request.user
+            oportunidade.save()
+            messages.success(request, 'Oportunidade criada com sucesso!')
+            return redirect('crm_oportunidades')
+    else:
+        form = OportunidadeForm(initial={'responsavel': request.user.id})
+
+    return render(request, 'html/crm_oportunidade_form.html', {'form': form})
+
+
+@login_required
+@admin_required
+def crm_kanban(request):
+    pipelines = Pipeline.objects.filter(ativo=True).order_by('nome')
+    pipeline_id = request.GET.get('pipeline', '').strip()
+
+    pipeline = None
+    if pipeline_id:
+        pipeline = get_object_or_404(Pipeline, id=pipeline_id)
+    elif pipelines.exists():
+        pipeline = pipelines.first()
+
+    colunas = []
+    if pipeline:
+        etapas = EtapaPipeline.objects.filter(pipeline=pipeline).order_by('ordem')
+        for etapa in etapas:
+            oportunidades = Oportunidade.objects.filter(pipeline=pipeline, etapa=etapa, status='aberta').select_related('lead', 'responsavel')
+            colunas.append({'etapa': etapa, 'oportunidades': oportunidades})
+
+    context = {
+        'pipelines': pipelines,
+        'pipeline': pipeline,
+        'colunas': colunas,
+    }
+    return render(request, 'html/crm_kanban.html', context)
 

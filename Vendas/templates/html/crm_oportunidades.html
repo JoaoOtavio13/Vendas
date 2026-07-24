@@ -1,0 +1,75 @@
+{% extends 'html/base.html' %}
+
+{% block title %}CRM - Oportunidades{% endblock %}
+
+{% block content %}
+<section class="showcase">
+    <div class="page-title">Oportunidades</div>
+
+    <form method="get" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+        <div class="filter-group">
+            <label class="filter-label" for="pipeline">Pipeline</label>
+            <select id="pipeline" name="pipeline" class="form-control">
+                <option value="">Todos</option>
+                {% for p in pipelines %}
+                    <option value="{{ p.id }}" {% if pipeline_atual == p.id|stringformat:'s' %}selected{% endif %}>{{ p.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="status">Status</label>
+            <select id="status" name="status" class="form-control">
+                <option value="">Todos</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_atual == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn" type="submit">Filtrar</button>
+        <a class="btn" href="{% url 'crm_oportunidade_criar' %}">Nova Oportunidade</a>
+    </form>
+
+    <div class="table-wrap">
+        <table class="vendas-table">
+            <thead>
+                <tr>
+                    <th>Titulo</th>
+                    <th>Lead</th>
+                    <th>Pipeline</th>
+                    <th>Etapa</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for op in oportunidades %}
+                <tr>
+                    <td><strong>{{ op.titulo }}</strong></td>
+                    <td>{{ op.lead.nome|default:'-' }}</td>
+                    <td>{{ op.pipeline.nome }}</td>
+                    <td>{{ op.etapa.nome }}</td>
+                    <td>{{ op.get_status_display }}</td>
+                    <td>R$ {{ op.valor|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding: 28px;">Nenhuma oportunidade encontrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if oportunidades.has_other_pages %}
+    <div style="text-align: center; margin-top: 20px;">
+        {% if oportunidades.has_previous %}
+            <a class="btn" href="?page={{ oportunidades.previous_page_number }}{% if pipeline_atual %}&pipeline={{ pipeline_atual }}{% endif %}{% if status_atual %}&status={{ status_atual }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="meta" style="margin: 0 12px;">Pagina {{ oportunidades.number }} de {{ oportunidades.paginator.num_pages }}</span>
+        {% if oportunidades.has_next %}
+            <a class="btn" href="?page={{ oportunidades.next_page_number }}{% if pipeline_atual %}&pipeline={{ pipeline_atual }}{% endif %}{% if status_atual %}&status={{ status_atual }}{% endif %}">Proxima</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

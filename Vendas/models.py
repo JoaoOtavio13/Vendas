@@ -155,3 +155,147 @@ class Venda_Produto(models.Model):
 
     def __str__(self):
         return f"Sua compra de {self.produto_id.nome} - {self.quantidade}" + f" - Totalizou: R${self.subtotal():.2f}"
+
+
+class Pipeline(models.Model):
+    nome = models.CharField(max_length=120)
+    ativo = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nome
+
+
+class EtapaPipeline(models.Model):
+    pipeline = models.ForeignKey(Pipeline, related_name='etapas', on_delete=models.CASCADE)
+    nome = models.CharField(max_length=120)
+    ordem = models.PositiveIntegerField(default=0)
+    probabilidade = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('pipeline', 'ordem')
+        ordering = ['ordem', 'id']
+
+    def __str__(self):
+        return f"{self.pipeline.nome} - {self.nome}"
+
+
+class Lead(models.Model):
+    ORIGEM_CHOICES = [
+        ('manual', 'Manual'),
+        ('site', 'Site'),
+        ('indicacao', 'Indicacao'),
+        ('outro', 'Outro'),
+    ]
+    STATUS_CHOICES = [
+        ('novo', 'Novo'),
+        ('qualificado', 'Qualificado'),
+        ('desqualificado', 'Desqualificado'),
+        ('convertido', 'Convertido'),
+    ]
+
+    nome = models.CharField(max_length=120)
+    email = models.EmailField(blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    empresa = models.CharField(max_length=120, blank=True, null=True)
+    cargo = models.CharField(max_length=120, blank=True, null=True)
+    valor_potencial = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    score = models.PositiveIntegerField(default=0)
+    observacoes = models.TextField(blank=True, null=True)
+    origem = models.CharField(max_length=20, choices=ORIGEM_CHOICES, default='manual')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='novo')
+    responsavel = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='leads_responsavel'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nome
+
+
+class Oportunidade(models.Model):
+    STATUS_CHOICES = [
+        ('aberta', 'Aberta'),
+        ('ganha', 'Ganha'),
+        ('perdida', 'Perdida'),
+    ]
+
+    lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, blank=True, null=True, related_name='oportunidades')
+    venda = models.ForeignKey(Venda, on_delete=models.SET_NULL, blank=True, null=True, related_name='oportunidades')
+    titulo = models.CharField(max_length=140)
+    valor = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    pipeline = models.ForeignKey(Pipeline, on_delete=models.PROTECT, related_name='oportunidades')
+    etapa = models.ForeignKey(EtapaPipeline, on_delete=models.PROTECT, related_name='oportunidades')
+    responsavel = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='oportunidades_responsavel'
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aberta')
+    previsao_fechamento = models.DateField(blank=True, null=True)
+    motivo_perda = models.TextField(blank=True, null=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if self.etapa_id and self.pipeline_id and self.etapa.pipeline_id != self.pipeline_id:
+            raise ValidationError("A etapa selecionada nao pertence ao pipeline informado.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.titulo
+
+
+class Atividade(models.Model):
+    TIPO_CHOICES = [
+        ('ligacao', 'Ligacao'),
+        ('email', 'Email'),
+        ('reuniao', 'Reuniao'),
+        ('tarefa', 'Tarefa'),
+        ('nota', 'Nota'),
+    ]
+
+    lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, blank=True, null=True, related_name='atividades')
+    oportunidade = models.ForeignKey(Oportunidade, on_delete=models.SET_NULL, blank=True, null=True, related_name='atividades')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='atividades')
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    titulo = models.CharField(max_length=140)
+    descricao = models.TextField(blank=True, null=True)
+    data_prevista = models.DateTimeField(blank=True, null=True)
+    concluida = models.BooleanField(default=False)
+    data_conclusao = models.DateTimeField(blank=True, null=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
+
+
+class InteracaoCliente(models.Model):
+    CANAL_CHOICES = [
+        ('email', 'Email'),
+        ('telefone', 'Telefone'),
+        ('whatsapp', 'WhatsApp'),
+        ('reuniao', 'Reuniao'),
+        ('outro', 'Outro'),
+    ]
+
+    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='interacoes_cliente')
+    oportunidade = models.ForeignKey(Oportunidade, on_delete=models.SET_NULL, blank=True, null=True, related_name='interacoes')
+    canal = models.CharField(max_length=20, choices=CANAL_CHOICES, default='outro')
+    assunto = models.CharField(max_length=140)
+    mensagem = models.TextField(blank=True, null=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.cliente.username} - {self.assunto}"
