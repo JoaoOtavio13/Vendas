@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)*pvno_r&p#wxhy*(fcsestygu(dj59f5cb^3o(@9s&&%8z0q_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
 
 # Application definition
@@ -149,3 +149,6 @@ SIMPLE_JWT = {
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True  # Apenas para desenvolvimento
 CORS_ALLOW_CREDENTIALS = True
+
+# Para desenvolvimento — exibe e-mails no terminal sem quoted-printable
+EMAIL_BACKEND = 'Vendas.email_backend.PlainTextEmailBackend'
