@@ -14,8 +14,9 @@ db.sqlite3
 db.sqlite3-journal
 media/
 
-# Test scripts
-test_reset_*.py
+# Test & study scripts
+test_*.py
+GUIA_ESTUDO.md
 emails_enviados/
 
 # IDE
